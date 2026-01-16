@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Image } from "../../home/helpers/Image";
+import { Image } from "../../helpers/Image";
 
 interface User {
     id: number;

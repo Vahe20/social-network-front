@@ -1,9 +1,20 @@
+import type React from "react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import Modal from "react-modal";
 
-import type React from "react"
+interface ReqPost {
+    title: string;
+    discription: string;
+    location?: string;
+    tags?: string;
+    image?: File;
+}
 
-interface Post {
+interface ResPost {
+    id: number;
     text: string;
-    createdAt: number;
+    createdAt: FormData;
 }
 
 interface Props {
@@ -11,23 +22,52 @@ interface Props {
 }
 
 function formatDate(timestamp: number) {
-    const date = new Date(timestamp);
-    return date.toLocaleString();
+    return new Date(timestamp).toLocaleString();
 }
 
 export const Posts: React.FC<Props> = ({ posts }) => {
+    const [modalIsOpen, setIsOpen] = useState(false);
+    const [register, submitHandler] = useForm();
+
+    const uploadPost = (form) => {
+
+    }
+
     return (
         <div className="posts">
-            {posts && posts.length > 0 ? (
-                posts.map((val: Post) => (
-                    <div className="post" key={val.createdAt}>
-                        <div className="post__text">{val.text}</div>
-                        <div className="post__date">{formatDate(val.createdAt)}</div>
-                    </div>
-                ))
-            ) : (
-                <p className="posts__empty">There are no posts</p>
-            )}
+            <div className="posts__addBtn">
+                <button onClick={() => setIsOpen(true)}>Add Post</button>
+            </div>
+
+            <Modal
+                className={"posts__modal"}
+                isOpen={modalIsOpen}
+                onRequestClose={() => setIsOpen(false)}
+                style={{
+                    overlay: {
+                        backgroundColor: "rgba(0, 0, 0, 0.6)"
+                    }
+                }}
+            >
+                <button onClick={() => setIsOpen(false)}>Close</button>
+                <div>
+                    <form>
+
+                    </form>
+                </div>
+            </Modal>
+
+            <div className="posts__list">
+                {posts.length > 0 ? (
+                    posts.map((post) => (
+                        <div className="post" key={post.id}>
+                            <div className="post__text">{post.title}</div>
+                        </div>
+                    ))
+                ) : (
+                    <p className="posts__empty">There are no posts</p>
+                )}
+            </div>
         </div>
-    )
-}
+    );
+};

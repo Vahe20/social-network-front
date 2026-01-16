@@ -5,13 +5,26 @@
 	flex-direction: column;
 	gap: rem(20);
 	margin-top: rem(20);
-}
 
-.posts__empty {
-	text-align: center;
-	color: var(--second-text-color);
-	font-size: rem(18);
-	margin-top: rem(40);
+	&__addBtn {
+		
+	}
+
+	&__modal {
+		@include abs-center();
+
+		background-color: var(--background_light);
+		box-shadow: var(--boxShadow);
+		padding: rem(20);
+		
+	}
+
+	&__empty {
+		text-align: center;
+		color: var(--second-text-color);
+		font-size: rem(18);
+		margin-top: rem(40);
+	}
 }
 
 .post {
@@ -24,8 +37,9 @@
 	gap: rem(10);
 	border: 1px solid rgba(199, 199, 199, 0.08);
 	transition: var(--transition);
+
 	&:hover {
-		box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+		box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
 		transform: scale(1.02);
 	}
 }

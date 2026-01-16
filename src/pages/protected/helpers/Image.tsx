@@ -1,5 +1,5 @@
 import type React from "react"
-import { BASE } from '../../../../config/Axios';
+import { BASE } from '../../../config/Axios';
 
 interface props {
     src: string

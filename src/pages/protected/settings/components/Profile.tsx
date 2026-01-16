@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { IAccount } from "../../../../types/utility";
-import { Image } from "../../home/helpers/Image";
+import { Image } from "../../helpers/Image";
 import type { UseFormRegister } from "react-hook-form";
 
 interface Props {

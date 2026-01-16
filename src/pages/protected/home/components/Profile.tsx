@@ -1,6 +1,6 @@
 import React, { useRef, } from "react"
 import type { IAccount } from "../../../../types/utility"
-import { Image } from "../helpers/Image"
+import { Image } from "../../helpers/Image"
 
 interface props {
     user: IAccount
