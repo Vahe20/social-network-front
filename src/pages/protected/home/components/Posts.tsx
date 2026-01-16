@@ -1,37 +1,53 @@
 import type React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Modal from "react-modal";
+import { Axios } from "../../../../config/Axios";
 
 interface ReqPost {
     title: string;
-    discription: string;
-    location?: string;
-    tags?: string;
+    description: string;
     image?: File;
 }
 
 interface ResPost {
     id: number;
-    text: string;
-    createdAt: FormData;
+    title: string;
+    description: string;
+    image?: string;
+    createdAt: string;
 }
 
 interface Props {
-    posts: Post[];
-}
-
-function formatDate(timestamp: number) {
-    return new Date(timestamp).toLocaleString();
+    posts: ResPost[];
 }
 
 export const Posts: React.FC<Props> = ({ posts }) => {
     const [modalIsOpen, setIsOpen] = useState(false);
-    const [register, submitHandler] = useForm();
+    const { register, handleSubmit, reset } = useForm<ReqPost>();
 
-    const uploadPost = (form) => {
+    useEffect(() => {
+        Modal.setAppElement("#root");
+    }, []);
 
-    }
+    const uploadPost = (form: ReqPost) => {
+        const formData = new FormData();
+
+        formData.append("title", form.title);
+        formData.append("description", form.description);
+        if (form.image) formData.append("image", form.image);
+
+        Axios.post("/posts", formData)
+            .then((res) => {
+                console.log(res.data);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+
+        reset();
+        setIsOpen(false);
+    };
 
     return (
         <div className="posts">
@@ -45,14 +61,28 @@ export const Posts: React.FC<Props> = ({ posts }) => {
                 onRequestClose={() => setIsOpen(false)}
                 style={{
                     overlay: {
-                        backgroundColor: "rgba(0, 0, 0, 0.6)"
-                    }
+                        backgroundColor: "rgba(0, 0, 0, 0.6)",
+                    },
                 }}
             >
                 <button onClick={() => setIsOpen(false)}>Close</button>
                 <div>
-                    <form>
-
+                    <form onSubmit={handleSubmit(uploadPost)}>
+                        <div>
+                            <label>Title</label>
+                            <input {...register("title")} required />
+                        </div>
+                        <div>
+                            <label>Description</label>
+                            <input {...register("description")} required />
+                        </div>
+                        <div>
+                            <label>Image</label>
+                            <input type="file" {...register("image")} />
+                        </div>
+                        <div>
+                            <button type="submit">Add Post</button>
+                        </div>
                     </form>
                 </div>
             </Modal>
@@ -61,7 +91,18 @@ export const Posts: React.FC<Props> = ({ posts }) => {
                 {posts.length > 0 ? (
                     posts.map((post) => (
                         <div className="post" key={post.id}>
-                            <div className="post__text">{post.title}</div>
+                            <div className="post__title">{post.title}</div>
+                            <div className="post__description">{post.description}</div>
+                            {post.image && (
+                                <img
+                                    src={post.image}
+                                    alt="Post Image"
+                                    className="post__image"
+                                />
+                            )}
+                            <div className="post__createdAt">
+                                {new Date(post.createdAt).toLocaleString()}
+                            </div>
                         </div>
                     ))
                 ) : (
