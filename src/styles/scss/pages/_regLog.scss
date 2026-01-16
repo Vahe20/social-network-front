@@ -1,0 +1,77 @@
+@use "../helpers/"as *;
+
+.regLog {
+    @include abs-center();
+
+    background: linear-gradient(135deg, var(--background_light) 0%, rgba(48, 54, 61, 0.2) 100%);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(199, 199, 199, 0.1);
+    border-radius: rem(20);
+    padding: rem(30) rem(60);
+    box-shadow: var(--boxShadow);
+
+    &__header {
+        text-align: center;
+
+        h2 {
+            margin: 0;
+        }
+
+        p {
+            margin: 5px;
+            color: var(--second-text-color);
+        }
+    }
+
+    &__form {
+        display: flex;
+        flex-direction: column;
+        gap: rem(20);
+
+        &-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            & label {
+                font-size: rem(20);
+                margin: rem(7);
+            }
+
+            & input {
+                padding: rem(10);
+                border: 1px solid var(--border-color);
+                border-radius: rem(8);
+                font-size: rem(16);
+                width: 100%;
+                transition: var(--transition);
+                background-color: transparent;
+
+                &:focus {
+                    outline: none;
+                    border-color: var(--primary_color);
+                    transform: scale(1.1);
+                }
+
+                &::placeholder {
+                    color: var(--second-text-color);
+                }
+            }
+
+            button {
+                @include btn(var(--background_blue), var(--text-color), rem(7), rem(14));
+                border-color: transparent;
+                transition: var(--transition);
+                width: 100%;
+
+                &:hover {
+                    transform: scale(1.1);
+                }
+
+                &::placeholder {
+                    color: var(--text-color);
+                }
+            }
+        }
+    }
+}

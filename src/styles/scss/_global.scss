@@ -1,0 +1,42 @@
+@use "helpers"as *;
+
+body {
+    @include fluid-text(18, 16);
+
+    background-color: var(--background_dark);
+    color: var(--text-color);
+}
+
+.container {
+    @include min-max(320px, 100%);
+}
+
+.wrap {
+    @include min-max(296px, 1280px);
+}
+
+.error {
+    color: var(--error);
+    padding: rem(3);
+    border-block: 1px solid var(--error)
+}
+
+
+a {
+    color: var(--primary_color);
+
+    transition: var(--transition);
+
+    &:hover {
+        color: var(--second-text-color);
+    }
+}
+
+// Global input and textarea styles
+input, textarea, select {
+    box-sizing: border-box;
+}
+
+* {
+    box-sizing: border-box;
+}

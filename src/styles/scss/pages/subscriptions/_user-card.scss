@@ -1,0 +1,253 @@
+@use "../../helpers/" as *;
+
+.user-card {
+    background: linear-gradient(135deg, var(--background_light) 0%, rgba(48, 54, 61, 0.2) 100%);
+    backdrop-filter: blur(rem(10));
+    border: 1px solid rgba(199, 199, 199, 0.1);
+    border-radius: rem(16);
+    padding: rem(20);
+    box-shadow: var(--boxShadow);
+    transition: all var(--transition);
+    display: flex;
+    flex-direction: column;
+    gap: rem(16);
+
+    @include mobile {
+        padding: rem(16);
+        gap: rem(14);
+    }
+
+    &:hover {
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+        transform: translateY(-4px);
+        border-color: rgba(199, 199, 199, 0.2);
+    }
+
+    &__link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+
+    &__avatar {
+        position: relative;
+        width: rem(80);
+        height: rem(80);
+        border-radius: 50%;
+        overflow: hidden;
+        border: 3px solid var(--primary_color);
+        box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+        margin: 0 auto;
+        cursor: pointer;
+        transition: all var(--transition);
+
+        @include mobile {
+            width: rem(70);
+            height: rem(70);
+        }
+
+        &:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(0, 102, 255, 0.4);
+        }
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    &__avatar-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-size: rem(32);
+        font-weight: bold;
+
+        @include mobile {
+            font-size: rem(28);
+        }
+    }
+
+    &__badge {
+        position: absolute;
+        bottom: rem(-8);
+        left: 50%;
+        transform: translateX(-50%);
+        padding: rem(4) rem(10);
+        border-radius: rem(12);
+        font-size: rem(11);
+        font-weight: 600;
+        white-space: nowrap;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+
+        @include mobile {
+            font-size: rem(10);
+            padding: rem(3) rem(8);
+        }
+
+        &--friend {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        &--mutual {
+            background: linear-gradient(135deg, var(--primary_color) 0%, #0052cc 100%);
+            color: white;
+        }
+
+        &--follower {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+        }
+    }
+
+    &__info {
+        text-align: center;
+        flex: 1;
+    }
+
+    &__name {
+        display: block;
+        font-size: rem(18);
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: rem(6);
+        text-decoration: none;
+        transition: color var(--transition);
+
+        @include mobile {
+            font-size: rem(17);
+        }
+
+        &:hover {
+            color: var(--primary_color);
+        }
+    }
+
+    &__you {
+        font-size: rem(14);
+        font-weight: 500;
+        color: var(--second-text-color);
+        font-style: italic;
+
+        @include mobile {
+            font-size: rem(13);
+        }
+    }
+
+    &__bio {
+        font-size: rem(14);
+        color: var(--second-text-color);
+        line-height: 1.5;
+        margin: 0 0 rem(8) 0;
+
+        @include mobile {
+            font-size: rem(13);
+        }
+    }
+
+    &__stats {
+        font-size: rem(13);
+        color: var(--second-text-color);
+        margin: 0;
+
+        @include mobile {
+            font-size: rem(12);
+        }
+    }
+
+    &__stat {
+        display: inline-flex;
+        align-items: center;
+        gap: rem(4);
+    }
+
+    &__actions {
+        display: flex;
+        gap: rem(8);
+        padding-top: rem(12);
+        border-top: 1px solid rgba(199, 199, 199, 0.1);
+
+        @include mobile {
+            flex-direction: column;
+        }
+    }
+
+    &__button {
+        flex: 1;
+        padding: rem(10) rem(16);
+        border: 1px solid rgba(199, 199, 199, 0.3);
+        border-radius: rem(8);
+        font-size: rem(14);
+        font-weight: 500;
+        cursor: pointer;
+        transition: all var(--transition);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+
+        @include mobile {
+            font-size: rem(13);
+            padding: rem(9) rem(14);
+        }
+
+        &--follow {
+            background: linear-gradient(135deg, var(--primary_color) 0%, #0052cc 100%);
+            color: white;
+            border-color: var(--primary_color);
+            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+
+            &:hover {
+                background: linear-gradient(135deg, #0052cc 0%, var(--primary_color) 100%);
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(0, 102, 255, 0.4);
+            }
+
+            &:active {
+                transform: translateY(0);
+            }
+        }
+
+        &--unfollow {
+            background: rgba(139, 139, 139, 0.1);
+            color: var(--text-color);
+            border-color: rgba(139, 139, 139, 0.3);
+
+            &:hover {
+                background: rgba(255, 59, 48, 0.1);
+                color: #ff6b6b;
+                border-color: rgba(255, 59, 48, 0.3);
+                transform: translateY(-2px);
+            }
+
+            &:active {
+                transform: translateY(0);
+            }
+        }
+
+        &--view {
+            background: transparent;
+            color: var(--text-color);
+            border-color: rgba(199, 199, 199, 0.3);
+
+            &:hover {
+                background: rgba(199, 199, 199, 0.1);
+                border-color: rgba(199, 199, 199, 0.5);
+                transform: translateY(-2px);
+            }
+
+            &:active {
+                transform: translateY(0);
+            }
+        }
+    }
+}

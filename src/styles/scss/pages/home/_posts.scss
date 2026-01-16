@@ -1,0 +1,43 @@
+@use "../../helpers/" as *;
+
+.posts {
+	display: flex;
+	flex-direction: column;
+	gap: rem(20);
+	margin-top: rem(20);
+}
+
+.posts__empty {
+	text-align: center;
+	color: var(--second-text-color);
+	font-size: rem(18);
+	margin-top: rem(40);
+}
+
+.post {
+	background: linear-gradient(135deg, var(--background_light) 0%, rgba(48, 54, 61, 0.2) 100%);
+	border-radius: rem(14);
+	box-shadow: var(--boxShadow);
+	padding: rem(18) rem(24);
+	display: flex;
+	flex-direction: column;
+	gap: rem(10);
+	border: 1px solid rgba(199, 199, 199, 0.08);
+	transition: var(--transition);
+	&:hover {
+		box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+		transform: scale(1.02);
+	}
+}
+
+.post__text {
+	font-size: rem(18);
+	color: var(--text-color);
+	word-break: break-word;
+}
+
+.post__date {
+	font-size: rem(14);
+	color: var(--second-text-color);
+	align-self: flex-end;
+}

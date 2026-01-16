@@ -1,79 +1,261 @@
-import { UpdatePassword } from './helpers/UpdatePassword';
-import { Privacy } from "./helpers/privacy"
-import { Bio } from './helpers/Bio';
+import { useOutletContext } from "react-router-dom";
+import type { IAccount, IContext } from "../../../types/utility";
+import { Axios } from "../../../config/Axios";
+import { useForm, type SubmitHandler } from "react-hook-form";
+import { Profile } from './components/Profile';
+import { Privacy } from './components/privacy';
+import { Password } from './components/Password';
+import { useState } from "react";
+import { AxiosError } from "axios";
+
+export interface Form extends IAccount {
+    newPassword: string;
+    confirmPassword: string;
+}
+
+interface ApiErrorResponse {
+    message?: string;
+}
+
+interface AvatarResponse {
+    picture: string;
+}
 
 export const Settings = () => {
+    const { user, setAccount } = useOutletContext<IContext>();
+    const { register, handleSubmit, reset } = useForm<Form>({
+        defaultValues: {
+            bio: user.bio,
+            isAccountPrivate: user.isAccountPrivate
+        }
+    });
+
+    const [error, setError] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            setError('Please select a valid image file');
+            return;
+        }
+
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            setError('Image size should be less than 5MB');
+            return;
+        }
+
+        setIsLoading(true);
+        const formData = new FormData();
+        formData.append('profile-pic', file);
+
+        Axios.patch<AvatarResponse>('/account/avatar', formData)
+            .then(response => {
+                setAccount(prev => prev ? {
+                    ...prev,
+                    avatar: response.data.picture
+                } : null);
+                setSuccessMessage('Profile picture updated successfully!');
+                setError("");
+                setTimeout(() => setSuccessMessage(""), 3000);
+            })
+            .catch((err: unknown) => {
+                const axiosError = err as AxiosError<ApiErrorResponse>;
+                console.error('Error uploading avatar:', axiosError);
+                setError(axiosError.response?.data?.message || 'Failed to upload avatar');
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
+    };
+
+    const handleRemoveAvatar = () => {
+        if (!confirm('Are you sure you want to remove your profile picture?')) return;
+
+        setIsLoading(true);
+        Axios.delete('/account/avatar')
+            .then(() => {
+                setAccount(prev => prev ? {
+                    ...prev,
+                    avatar: ''
+                } : null);
+                setSuccessMessage('Profile picture removed successfully!');
+                setError("");
+                setTimeout(() => setSuccessMessage(""), 3000);
+            })
+            .catch((err: unknown) => {
+                const axiosError = err as AxiosError<ApiErrorResponse>;
+                console.error('Error removing avatar:', axiosError);
+                setError(axiosError.response?.data?.message || 'Failed to remove avatar');
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
+    };
+
+    const submit: SubmitHandler<Form> = (form) => {
+        const { password, newPassword, confirmPassword, bio, isAccountPrivate } = form;
+
+        setError("");
+        setSuccessMessage("");
+        setIsLoading(true);
+
+        const promises: Promise<unknown>[] = [];
+
+        // Password change
+        if (password && newPassword) {
+            if (newPassword !== confirmPassword) {
+                setError("New passwords do not match");
+                setIsLoading(false);
+                return;
+            }
+
+            if (newPassword.length < 8) {
+                setError("Password must be at least 8 characters long");
+                setIsLoading(false);
+                return;
+            }
+
+            promises.push(
+                Axios.patch("/account/settings/password", { 
+                    currentPassword: password, 
+                    newPassword 
+                })
+            );
+        }
+
+        // Bio update
+        if (bio !== user.bio) {
+            promises.push(
+                Axios.patch("/account/bio", { bio })
+            );
+        }
+
+        // Privacy update
+        if (isAccountPrivate !== user.isAccountPrivate) {
+            promises.push(
+                Axios.patch("/account/privacy", { isAccountPrivate })
+            );
+        }
+
+        if (promises.length === 0) {
+            setError("No changes to save");
+            setIsLoading(false);
+            return;
+        }
+
+        Promise.all(promises)
+            .then(() => {
+                setSuccessMessage('Settings updated successfully!');
+                setAccount(prev => prev ? {
+                    ...prev,
+                    bio: bio || prev.bio,
+                    isAccountPrivate: isAccountPrivate ?? prev.isAccountPrivate
+                } : null);
+                
+                // Clear password fields
+                reset({
+                    bio,
+                    isAccountPrivate,
+                    password: '',
+                    newPassword: '',
+                    confirmPassword: ''
+                });
+                
+                setTimeout(() => setSuccessMessage(""), 3000);
+            })
+            .catch((err: unknown) => {
+                const axiosError = err as AxiosError<ApiErrorResponse>;
+                setError(axiosError.response?.data?.message || 'Failed to update settings');
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
+    };
+
+    const handleCancel = () => {
+        reset({
+            bio: user.bio,
+            isAccountPrivate: user.isAccountPrivate,
+            password: '',
+            newPassword: '',
+            confirmPassword: ''
+        });
+        setError("");
+        setSuccessMessage("");
+    };
+
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-            <div className="container mx-auto px-4 py-12 max-w-4xl">
-                <div className="mb-12 text-center">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-lime-400 to-emerald-500 rounded-2xl mb-4 shadow-lg shadow-lime-500/20">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
+        <div className="settings">
+            <div className="settings__container">
+                <h1 className="settings__title">Settings</h1>
+                
+                {error && (
+                    <div className="error">
+                        {error}
                     </div>
-                    <h1 className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-lime-400 via-emerald-400 to-lime-500 mb-3">
-                        Settings
-                    </h1>
-                    <p className="text-gray-400 text-lg">
-                        Manage your account preferences and privacy
-                    </p>
-                </div>
-
-                <div className="space-y-6">
-                    <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-8 hover:border-lime-500/30 transition-all duration-300 shadow-xl">
-                        <div className="flex items-start gap-4 mb-6">
-                            <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-lime-500/20 to-emerald-500/20 rounded-xl flex items-center justify-center border border-lime-500/30">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-lime-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                </svg>
-                            </div>
-                            <div className="flex-1">
-                                <h2 className="text-2xl font-bold text-white mb-2">Security</h2>
-                                <p className="text-gray-400 mb-4">Keep your account secure with a strong password</p>
-                                <UpdatePassword />
-                            </div>
-                        </div>
+                )}
+                
+                {successMessage && (
+                    <div style={{
+                        marginBottom: '20px',
+                        padding: '12px 16px',
+                        background: 'rgba(34, 197, 94, 0.1)',
+                        border: '1px solid rgba(34, 197, 94, 0.3)',
+                        borderRadius: '10px',
+                        color: '#4ade80',
+                        fontSize: '14px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                    }}>
+                        <span style={{ fontSize: '18px' }}>✓</span>
+                        {successMessage}
                     </div>
+                )}
+                
+                <form onSubmit={handleSubmit(submit)}>
+                    <Profile
+                        user={user}
+                        register={register}
+                        handleAvatarChange={handleAvatarChange}
+                        handleRemoveAvatar={handleRemoveAvatar}
+                        isLoading={isLoading}
+                    />
 
-                    <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-8 hover:border-lime-500/30 transition-all duration-300 shadow-xl">
-                        <div className="flex items-start gap-4">
-                            <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl flex items-center justify-center border border-blue-500/30">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                                </svg>
-                            </div>
-                            <div className="flex-1">
-                                <h2 className="text-2xl font-bold text-white mb-2">Privacy</h2>
-                                <p className="text-gray-400 mb-4">Control who can see your profile and content</p>
-                                <Privacy />
-                            </div>
-                        </div>
+                    <Privacy
+                        user={user}
+                        register={register}
+                    />
+
+                    <Password
+                        register={register}
+                    />
+
+                    <div className="settings__actions">
+                        <button 
+                            type="submit" 
+                            className="settings__save-btn"
+                            disabled={isLoading}
+                        >
+                            {isLoading ? 'Saving...' : 'Save Changes'}
+                        </button>
+                        <button 
+                            type="button" 
+                            className="settings__cancel-btn"
+                            onClick={handleCancel}
+                            disabled={isLoading}
+                        >
+                            Cancel
+                        </button>
                     </div>
-
-                    <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-8 hover:border-lime-500/30 transition-all duration-300 shadow-xl">
-                        <div className="flex items-start gap-4">
-                            <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-pink-500/20 to-rose-500/20 rounded-xl flex items-center justify-center border border-pink-500/30">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
-                            </div>
-                            <div className="flex-1">
-                                <h2 className="text-2xl font-bold text-white mb-2">Profile Information</h2>
-                                <p className="text-gray-400 mb-4">Update your bio and personal details</p>
-                                <Bio />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="mt-12 text-center">
-                    <p className="text-gray-500 text-sm">
-                        Changes are saved automatically • Last updated just now
-                    </p>
-                </div>
+                </form>
             </div>
         </div>
-    )
-}
+    );
+};

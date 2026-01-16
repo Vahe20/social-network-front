@@ -1,0 +1,272 @@
+@use "../../helpers/" as *;
+
+.settings {
+    padding: rem(24) rem(20);
+    min-height: 100vh;
+
+    @include tablet {
+        padding: rem(20) rem(16);
+    }
+
+    @include mobile {
+        padding: rem(16) rem(12);
+    }
+
+    &__container {
+        max-width: rem(900);
+        margin: 0 auto;
+    }
+
+    &__title {
+        font-size: rem(32);
+        font-weight: 700;
+        margin-bottom: rem(8);
+        background: linear-gradient(135deg, var(--primary_color) 0%, #00ccff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+
+        @include tablet {
+            font-size: rem(28);
+        }
+
+        @include mobile {
+            font-size: rem(24);
+        }
+    }
+
+    &__section {
+        background: linear-gradient(135deg, var(--background_light) 0%, rgba(48, 54, 61, 0.2) 100%);
+        backdrop-filter: blur(rem(10));
+        border: 1px solid rgba(199, 199, 199, 0.1);
+        border-radius: rem(16);
+        padding: rem(24);
+        margin-bottom: rem(20);
+        box-shadow: var(--boxShadow);
+        transition: all var(--transition);
+
+        @include mobile {
+            padding: rem(16);
+        }
+
+        &:hover {
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+            transform: translateY(-2px);
+        }
+    }
+
+    &__section-title {
+        font-size: rem(22);
+        font-weight: 600;
+        margin: 0 0 rem(8) 0;
+        color: var(--text-color);
+
+        @include mobile {
+            font-size: rem(20);
+        }
+    }
+
+    &__section-description {
+        color: var(--second-text-color);
+        font-size: rem(14);
+        margin: 0 0 rem(24) 0;
+        line-height: 1.5;
+
+        @include mobile {
+            font-size: rem(13);
+        }
+    }
+
+    &__field {
+        margin-bottom: rem(20);
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    &__label {
+        display: block;
+        font-size: rem(15);
+        font-weight: 500;
+        color: var(--text-color);
+        margin-bottom: rem(8);
+
+        @include mobile {
+            font-size: rem(14);
+        }
+    }
+
+    &__input {
+        width: 100%;
+        padding: rem(12) rem(16);
+        background: rgba(11, 15, 20, 0.6);
+        border: 1px solid rgba(199, 199, 199, 0.15);
+        border-radius: rem(10);
+        color: var(--text-color);
+        font-size: rem(15);
+        transition: all var(--transition);
+        box-sizing: border-box;
+
+        @include mobile {
+            padding: rem(10) rem(14);
+            font-size: rem(14);
+        }
+
+        &::placeholder {
+            color: var(--second-text-color);
+        }
+
+        &:focus {
+            outline: none;
+            border-color: var(--primary_color);
+            background: rgba(11, 15, 20, 0.8);
+            box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+        }
+
+        &:hover {
+            border-color: rgba(199, 199, 199, 0.25);
+        }
+    }
+
+    &__textarea {
+        width: 100%;
+        padding: rem(12) rem(16);
+        background: rgba(11, 15, 20, 0.6);
+        border: 1px solid rgba(199, 199, 199, 0.15);
+        border-radius: rem(10);
+        color: var(--text-color);
+        font-size: rem(15);
+        transition: all var(--transition);
+        box-sizing: border-box;
+        resize: vertical;
+        min-height: rem(100);
+        font-family: inherit;
+        line-height: 1.5;
+
+        @include mobile {
+            padding: rem(10) rem(14);
+            font-size: rem(14);
+        }
+
+        &::placeholder {
+            color: var(--second-text-color);
+        }
+
+        &:focus {
+            outline: none;
+            border-color: var(--primary_color);
+            background: rgba(11, 15, 20, 0.8);
+            box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+        }
+
+        &:hover {
+            border-color: rgba(199, 199, 199, 0.25);
+        }
+    }
+
+    &__hint {
+        display: block;
+        font-size: rem(13);
+        color: var(--second-text-color);
+        margin-top: rem(6);
+
+        @include mobile {
+            font-size: rem(12);
+        }
+    }
+
+    &__actions {
+        display: flex;
+        gap: rem(12);
+        margin-top: rem(32);
+        padding-top: rem(24);
+        border-top: 1px solid rgba(199, 199, 199, 0.1);
+
+        @include mobile {
+            flex-direction: column;
+        }
+    }
+
+    &__save-btn {
+        flex: 1;
+        padding: rem(14) rem(32);
+        background: linear-gradient(135deg, var(--primary_color) 0%, #0052cc 100%);
+        color: white;
+        border: none;
+        border-radius: rem(10);
+        font-size: rem(16);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all var(--transition);
+        box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+
+        @include mobile {
+            font-size: rem(15);
+        }
+
+        &:hover:not(:disabled) {
+            background: linear-gradient(135deg, #0052cc 0%, var(--primary_color) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 102, 255, 0.4);
+        }
+
+        &:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    }
+
+    &__cancel-btn {
+        padding: rem(14) rem(32);
+        background: transparent;
+        color: var(--text-color);
+        border: 1px solid rgba(199, 199, 199, 0.3);
+        border-radius: rem(10);
+        font-size: rem(16);
+        font-weight: 500;
+        cursor: pointer;
+        transition: all var(--transition);
+
+        @include mobile {
+            font-size: rem(15);
+        }
+
+        &:hover:not(:disabled) {
+            background: rgba(199, 199, 199, 0.1);
+            border-color: rgba(199, 199, 199, 0.5);
+            transform: translateY(-2px);
+        }
+
+        &:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    }
+
+    .error {
+        margin-bottom: rem(20);
+        padding: rem(12) rem(16);
+        background: rgba(255, 59, 48, 0.1);
+        border: 1px solid rgba(255, 59, 48, 0.3);
+        border-radius: rem(10);
+        color: #ff6b6b;
+        font-size: rem(14);
+        display: flex;
+        align-items: center;
+        gap: rem(8);
+
+        &:before {
+            content: "⚠";
+            font-size: rem(18);
+        }
+    }
+}

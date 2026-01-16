@@ -1,0 +1,9 @@
+@use 'variables';
+@use 'global';
+
+@use "./pages/regLog";
+@use "./pages/layout/index"as *;
+@use "./pages/notFound";
+@use "./pages/home/index"as *;
+@use "./pages/settings/index" as *;
+@use "./pages/subscriptions/index" as *;

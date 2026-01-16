@@ -1,0 +1,120 @@
+@use "../../helpers/" as *;
+
+.settings {
+    &__toggle-group {
+        display: flex;
+        flex-direction: column;
+        gap: rem(16);
+    }
+
+    &__toggle-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: rem(16);
+        padding: rem(16);
+        background: rgba(11, 15, 20, 0.4);
+        border-radius: rem(10);
+        border: 1px solid rgba(199, 199, 199, 0.08);
+        transition: all var(--transition);
+
+        @include mobile {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: rem(12);
+        }
+
+        &:hover {
+            background: rgba(11, 15, 20, 0.6);
+            border-color: rgba(199, 199, 199, 0.15);
+        }
+    }
+
+    &__toggle-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__toggle-label {
+        display: block;
+        font-size: rem(16);
+        font-weight: 500;
+        color: var(--text-color);
+        margin-bottom: rem(4);
+
+        @include mobile {
+            font-size: rem(15);
+        }
+    }
+
+    &__toggle-description {
+        display: block;
+        font-size: rem(13);
+        color: var(--second-text-color);
+        line-height: 1.4;
+
+        @include mobile {
+            font-size: rem(12);
+        }
+    }
+
+    &__switch {
+        position: relative;
+        display: inline-block;
+        width: rem(52);
+        height: rem(28);
+        flex-shrink: 0;
+
+        @include mobile {
+            align-self: flex-end;
+        }
+
+        input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+
+            &:checked + .settings__slider {
+                background: linear-gradient(135deg, var(--primary_color) 0%, #00ccff 100%);
+
+                &:before {
+                    transform: translateX(rem(24));
+                }
+            }
+
+            &:focus + .settings__slider {
+                box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.2);
+            }
+        }
+    }
+
+    &__slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(139, 139, 139, 0.3);
+        transition: var(--transition);
+        border-radius: rem(28);
+        border: 1px solid rgba(199, 199, 199, 0.2);
+
+        &:before {
+            position: absolute;
+            content: "";
+            height: rem(20);
+            width: rem(20);
+            left: rem(4);
+            bottom: rem(3);
+            background: white;
+            transition: var(--transition);
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        &:hover {
+            background: rgba(139, 139, 139, 0.4);
+        }
+    }
+}

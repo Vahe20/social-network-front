@@ -1,0 +1,188 @@
+@use "../../helpers" as *;
+
+.header {
+    background: linear-gradient(135deg, var(--background_light) 0%, rgba(48, 54, 61, 0.2) 100%);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(199, 199, 199, 0.1);
+    padding: rem(16) rem(24);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+
+    @include tablet {
+        padding: rem(14) rem(20);
+    }
+
+    @include mobile {
+        padding: rem(12) rem(16);
+    }
+
+    &__container {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: rem(24);
+
+        @include mobile {
+            flex-direction: column;
+            align-items: stretch;
+            gap: rem(12);
+        }
+    }
+
+    &__logo {
+        font-size: rem(24);
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--primary_color) 0%, #00ccff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: -0.5px;
+        white-space: nowrap;
+        transition: var(--transition);
+
+        @include tablet {
+            font-size: rem(22);
+        }
+
+        @include mobile {
+            font-size: rem(20);
+            text-align: center;
+        }
+
+        &:hover {
+            transform: scale(1.05);
+        }
+    }
+
+    &__nav {
+        flex: 1;
+        overflow-x: auto;
+        
+        &::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: rgba(199, 199, 199, 0.2);
+            border-radius: 4px;
+        }
+    }
+
+    &__list {
+        display: flex;
+        gap: rem(8);
+        list-style: none;
+        padding: 0;
+        margin: rem(5);
+        align-items: center;
+
+        @include tablet {
+            gap: rem(6);
+        }
+
+        @include mobile {
+            justify-content: flex-start;
+            padding-bottom: rem(4);
+        }
+    }
+
+    &__item {
+        flex-shrink: 0;
+    }
+
+    &__link {
+        display: inline-flex;
+        align-items: center;
+        padding: rem(10) rem(16);
+        border-radius: rem(8);
+        font-size: rem(14);
+        font-weight: 500;
+        color: var(--text-color);
+        text-decoration: none;
+        background: transparent;
+        border: 1px solid transparent;
+        transition: all var(--transition);
+        cursor: pointer;
+        white-space: nowrap;
+        position: relative;
+
+        @include tablet {
+            padding: rem(9) rem(14);
+            font-size: rem(13);
+        }
+
+        @include mobile {
+            padding: rem(8) rem(12);
+            font-size: rem(13);
+        }
+
+        &::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%) scaleX(0);
+            width: 80%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary_color), #00ccff);
+            border-radius: 2px;
+            transition: transform var(--transition);
+        }
+
+        &:hover {
+            color: var(--primary_color);
+            background: rgba(0, 102, 255, 0.1);
+            border-color: rgba(0, 102, 255, 0.2);
+            transform: translateY(-2px);
+
+            &::before {
+                transform: translateX(-50%) scaleX(1);
+            }
+        }
+
+        &:active {
+            transform: translateY(0);
+        }
+
+        &.active {
+            color: #ffffff;
+            background: linear-gradient(135deg, var(--primary_color) 0%, #0052cc 100%);
+            border-color: var(--primary_color);
+            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+
+            &::before {
+                display: none;
+            }
+
+            &:hover {
+                background: linear-gradient(135deg, #0052cc 0%, var(--primary_color) 100%);
+                transform: translateY(-2px);
+            }
+        }
+    }
+
+    &__logout {
+        background: rgba(255, 59, 48, 0.1);
+        border-color: rgba(255, 59, 48, 0.2);
+        color: #ff6b6b;
+
+        &:hover {
+            background: rgba(255, 59, 48, 0.2);
+            border-color: rgba(255, 59, 48, 0.4);
+            color: #ff4757;
+            box-shadow: 0 4px 12px rgba(255, 59, 48, 0.2);
+        }
+
+        &::before {
+            background: linear-gradient(90deg, #ff4757, #ff6b6b);
+        }
+    }
+}

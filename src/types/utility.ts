@@ -9,6 +9,9 @@ export interface IAccount extends IUser {
 	avatar: string;
 	bio: string;
 	isAccountPrivate: boolean;
+	posts: [];
+	followers: [];
+	followings: [];
 }
 
 export interface IContext {
