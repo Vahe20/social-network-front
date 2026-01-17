@@ -6,18 +6,21 @@ interface Props {
     user: IUserSafe;
     currentUserId: number;
     isFollowing?: boolean;
+    isPending?: boolean;
     onFollow: (userId: number) => void;
     onUnfollow: (userId: number) => void;
 }
 
-export const UserCard: React.FC<Props> = ({ user, currentUserId, isFollowing = false, onFollow, onUnfollow }) => {
+export const UserCard: React.FC<Props> = ({ 
+    user, 
+    currentUserId, 
+    isFollowing = false, 
+    isPending = false,
+    onFollow, 
+    onUnfollow 
+}) => {
     const isCurrentUser = user.id === currentUserId;
     const displayName = user.username || 'User';
-
-    const getBadge = () => {
-        if (isCurrentUser) return null;
-        return null;
-    };
 
     const getActionButton = () => {
         if (isCurrentUser) {
@@ -28,6 +31,17 @@ export const UserCard: React.FC<Props> = ({ user, currentUserId, isFollowing = f
             );
         }
 
+        if (isPending) {
+            return (
+                <button
+                    className="user-card__button user-card__button--pending"
+                    onClick={() => onUnfollow(user.id)}
+                >
+                    ⏳ Pending
+                </button>
+            );
+        }
+
         if (isFollowing) {
             return (
                 <button
@@ -35,6 +49,17 @@ export const UserCard: React.FC<Props> = ({ user, currentUserId, isFollowing = f
                     onClick={() => onUnfollow(user.id)}
                 >
                     ✓ Following
+                </button>
+            );
+        }
+
+        if (user.isAccountPrivate) {
+            return (
+                <button
+                    className="user-card__button user-card__button--follow"
+                    onClick={() => onFollow(user.id)}
+                >
+                    🔒 Request
                 </button>
             );
         }
@@ -54,7 +79,6 @@ export const UserCard: React.FC<Props> = ({ user, currentUserId, isFollowing = f
             <Link to={`/account/profile/${user.id}`} className="user-card__link">
                 <div className="user-card__avatar">
                     <Image src={user.avatar} />
-                    {getBadge()}
                 </div>
             </Link>
 
@@ -75,7 +99,7 @@ export const UserCard: React.FC<Props> = ({ user, currentUserId, isFollowing = f
                 {getActionButton()}
                 {!isCurrentUser && (
                     <Link
-                        to={`/account/profile/${user.id}`}
+                        to={`/account/profile/${user.username}`}
                         className="user-card__button user-card__button--view"
                     >
                         View Profile

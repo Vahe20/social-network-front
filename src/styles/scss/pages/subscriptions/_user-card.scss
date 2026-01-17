@@ -234,6 +234,19 @@
             }
         }
 
+        &--pending {
+            background: rgba(255, 193, 7, 0.1);
+            color: #f59e0b;
+            border-color: rgba(245, 158, 11, 0.3);
+            cursor: default;
+
+            &:hover {
+                background: rgba(255, 193, 7, 0.15);
+                border-color: rgba(245, 158, 11, 0.4);
+                transform: none;
+            }
+        }
+
         &--view {
             background: transparent;
             color: var(--text-color);

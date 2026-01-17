@@ -8,7 +8,6 @@ import { Tabs } from "./components/Tabs";
 import { AxiosError } from "axios";
 import { userService } from "../../../services";
 
-
 interface ApiErrorResponse {
     message?: string;
 }
@@ -23,9 +22,9 @@ export const Subscriptions = () => {
     const [followers, setFollowers] = useState<IUserSafe[]>([]);
     const [isSearching, setIsSearching] = useState(false);
     const [error, setError] = useState("");
+    const [, setActionLoading] = useState<number | null>(null);
 
     const debouncedSearchQuery = useDebounce(searchQuery, 500);
-
 
     useEffect(() => {
         if (debouncedSearchQuery.trim()) {
@@ -37,14 +36,14 @@ export const Subscriptions = () => {
 
     const loadFollowing = useCallback(() => {
         const followingUsers = user.followings
-            .filter(f => f.receiver)
+            .filter(f => f.receiver && f.approved)
             .map(f => f.receiver);
         setFollowing(followingUsers);
     }, [user.followings]);
 
     const loadFollowers = useCallback(() => {
         const followerUsers = user.followers
-            .filter(f => f.sender)
+            .filter(f => f.sender && f.approved)
             .map(f => f.sender);
         setFollowers(followerUsers);
     }, [user.followers]);
@@ -75,26 +74,43 @@ export const Subscriptions = () => {
     };
 
     const handleFollow = async (userId: number) => {
+        setActionLoading(userId);
+        setError("");
+
         try {
             await userService.followUser(userId);
-
             await refetch();
         } catch (err) {
             const axiosError = err as AxiosError<ApiErrorResponse>;
             setError(axiosError.response?.data?.message || 'Failed to follow user');
+        } finally {
+            setActionLoading(null);
         }
     };
 
     const handleUnfollow = async (userId: number) => {
-        if (!confirm('Are you sure you want to unfollow this user?')) return;
+        const userToUnfollow = getCurrentList().find(u => u.id === userId);
+        const isPending = user.followings.find(
+            f => f.receiver?.id === userId && !f.approved
+        );
+
+        const confirmMessage = isPending
+            ? 'Cancel follow request?'
+            : `Are you sure you want to unfollow ${userToUnfollow?.username}?`;
+
+        if (!confirm(confirmMessage)) return;
+
+        setActionLoading(userId);
+        setError("");
 
         try {
             await userService.unfollowUser(userId);
-
             await refetch();
         } catch (err) {
             const axiosError = err as AxiosError<ApiErrorResponse>;
             setError(axiosError.response?.data?.message || 'Failed to unfollow user');
+        } finally {
+            setActionLoading(null);
         }
     };
 
@@ -126,6 +142,14 @@ export const Subscriptions = () => {
         }
     };
 
+    const getFollowStatus = (userId: number) => {
+        const followingRelation = user.followings.find(f => f.receiver?.id === userId);
+        return {
+            isFollowing: followingRelation?.approved || false,
+            isPending: followingRelation ? !followingRelation.approved : false
+        };
+    };
+
     return (
         <div className="subscriptions">
             <div className="subscriptions__container">
@@ -137,8 +161,8 @@ export const Subscriptions = () => {
                 </div>
 
                 {error && (
-                    <div className="error">
-                        {error}
+                    <div className="subscriptions__error">
+                        ⚠️ {error}
                     </div>
                 )}
 
@@ -165,7 +189,7 @@ export const Subscriptions = () => {
                     ) : getCurrentList().length > 0 ? (
                         <div className="subscriptions__grid">
                             {getCurrentList().map(userItem => {
-                                const isFollowing = following.some(f => f.id === userItem.id);
+                                const { isFollowing, isPending } = getFollowStatus(userItem.id);
 
                                 return (
                                     <UserCard
@@ -173,6 +197,7 @@ export const Subscriptions = () => {
                                         user={userItem}
                                         currentUserId={user.id}
                                         isFollowing={isFollowing}
+                                        isPending={isPending}
                                         onFollow={handleFollow}
                                         onUnfollow={handleUnfollow}
                                     />

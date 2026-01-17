@@ -76,7 +76,6 @@ export interface IContext {
 	refetch: () => Promise<void>;
 }
 
-// API Request Types
 export interface ISignupRequest {
 	firstName: string;
 	lastName: string;

@@ -1,10 +1,30 @@
 import { NavLink } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { userService } from '../../../services';
 
 interface props {
     handleLogout: () => void;
 }
 
 export const Header: React.FC<props> = ({ handleLogout }) => {
+    const [requestCount, setRequestCount] = useState(0);
+
+    useEffect(() => {
+        loadRequestCount();
+        // Обновляем каждые 30 секунд
+        const interval = setInterval(loadRequestCount, 30000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const loadRequestCount = async () => {
+        try {
+            const response = await userService.getFollowRequests();
+            setRequestCount(response.data.requests.length);
+        } catch (err) {
+            // Игнорируем ошибки, чтобы не мешать пользователю
+        }
+    };
+
     return (
         <header className='header'>
             <div className='header__container'>
@@ -13,17 +33,25 @@ export const Header: React.FC<props> = ({ handleLogout }) => {
                     <ul className='header__list'>
                         <li className='header__item'>
                             <NavLink to="/account/home" className='header__link'>
-                                Home
+                                🏠 Home
                             </NavLink>
                         </li>
                         <li className='header__item'>
                             <NavLink to="/account/subscriptions" className='header__link'>
-                                Connections
+                                👥 Connections
+                            </NavLink>
+                        </li>
+                        <li className='header__item'>
+                            <NavLink to="/account/requests" className='header__link'>
+                                ✉️ Requests
+                                {requestCount > 0 && (
+                                    <span className='header__badge'>{requestCount}</span>
+                                )}
                             </NavLink>
                         </li>
                         <li className='header__item'>
                             <NavLink to="/account/settings" className='header__link'>
-                                Settings
+                                ⚙️ Settings
                             </NavLink>
                         </li>
                         <li className='header__item'>
@@ -31,7 +59,7 @@ export const Header: React.FC<props> = ({ handleLogout }) => {
                                 onClick={handleLogout} 
                                 className='header__link header__logout'
                             >
-                                Logout
+                                🚪 Logout
                             </button>
                         </li>
                     </ul>

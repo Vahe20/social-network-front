@@ -152,7 +152,7 @@
     }
 
     // Error Message
-    .error {
+    &__error {
         margin-bottom: rem(20);
         padding: rem(12) rem(16);
         background: rgba(255, 59, 48, 0.1);
@@ -163,10 +163,11 @@
         display: flex;
         align-items: center;
         gap: rem(8);
+        animation: slideDown 0.3s ease-out;
 
-        &:before {
-            content: "⚠";
-            font-size: rem(18);
+        @include mobile {
+            font-size: rem(13);
+            padding: rem(10) rem(14);
         }
     }
 }

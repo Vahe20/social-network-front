@@ -1,6 +1,6 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import { Header } from './components/Header';
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import type { IAccount } from '../../types/utility';
 import { useHttp } from '../../hooks';
 
@@ -16,17 +16,18 @@ export const Layout = () => {
             return;
         }
 
-
         refetch();
-
-
     }, [navigate, refetch]);
 
     const handleLogout = () => {
         localStorage.removeItem("token");
-        refetch();
         navigate("/");
     };
+
+    // Оптимизированный refetch с опциональным silent режимом
+    const optimizedRefetch = useCallback(async (silent: boolean = true) => {
+        await refetch(silent);
+    }, [refetch]);
 
     if (loading) {
         return (
@@ -52,7 +53,7 @@ export const Layout = () => {
         <div className='layout'>
             <Header handleLogout={handleLogout} />
             <div className="wrap">
-                <Outlet context={{ user: data, refetch }} />
+                <Outlet context={{ user: data, refetch: optimizedRefetch }} />
             </div>
         </div>
     );

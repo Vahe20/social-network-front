@@ -7,9 +7,11 @@ export const useHttp = <T>(url: string) => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
-	const refetch = useCallback(async () => {
+	const refetch = useCallback(async (silent: boolean = false) => {
 		try {
-			setLoading(true);
+			if (!silent) {
+				setLoading(true);
+			}
 			setError(null);
 
 			const response = await Axios.get<{ user: T }>(url);
@@ -21,7 +23,9 @@ export const useHttp = <T>(url: string) => {
 				setError("Unexpected error");
 			}
 		} finally {
-			setLoading(false);
+			if (!silent) {
+				setLoading(false);
+			}
 		}
 	}, [url]);
 

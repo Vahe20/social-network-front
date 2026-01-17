@@ -6,6 +6,8 @@ import { Login } from "../pages/available/login";
 import { Home } from "../pages/protected/home";
 import { Settings } from "../pages/protected/settings";
 import { Subscriptions } from "../pages/protected/subscriptions";
+import { Profile } from "../pages/protected/profile";
+import { Requests } from "../pages/protected/requests";
 
 export const routes = createBrowserRouter([
     {
@@ -23,6 +25,8 @@ export const routes = createBrowserRouter([
             { path: 'home', element: <Home /> },
             { path: 'subscriptions', element: <Subscriptions /> },
             { path: 'settings', element: <Settings /> },
+            { path: 'profile/:username', element: <Profile /> },
+            { path: 'requests', element: <Requests /> },
         ]
     },
     { path: "*", element: <NotFound /> }

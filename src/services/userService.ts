@@ -23,7 +23,7 @@ export const userService = {
 	},
 
 	getUserByUsername: async (username: string) => {
-		return Axios.get<GetUserResponse>(`/users/username/${username}`);
+		return Axios.get<GetUserResponse>(`/account/${username}`);
 	},
 
 	followUser: async (userId: number) => {
