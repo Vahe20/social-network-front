@@ -1,4 +1,2 @@
-import { Profile } from "./Profile";
-import { Posts } from "./Posts";
-
-export { Profile, Posts }
+export { Profile } from "./Profile";
+export { Posts } from "./Posts";

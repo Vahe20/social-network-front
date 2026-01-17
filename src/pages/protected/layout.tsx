@@ -1,34 +1,59 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import { Header } from './components/Header';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import type { IAccount } from '../../types/utility';
-import { Axios } from '../../config/Axios';
+import { useHttp } from '../../hooks';
 
 export const Layout = () => {
-    const [account, setAccount] = useState<IAccount | null>(null)
-    const navigate = useNavigate()
+    const { data, loading, refetch } = useHttp<IAccount>("/auth/user");
+    const navigate = useNavigate();
 
     useEffect(() => {
-        Axios.get<{ user: IAccount }>("/auth/user")
-            .then(response => {
-                setAccount(response.data.user)
-            })
-            .catch(() => {
-                navigate("/")
-            })
-    }, [])
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            navigate("/");
+            return;
+        }
+
+
+        refetch();
+
+
+    }, [navigate, refetch]);
 
     const handleLogout = () => {
         localStorage.removeItem("token");
+        refetch();
         navigate("/");
+    };
+
+    if (loading) {
+        return (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh',
+                background: 'var(--background_dark)',
+                color: 'var(--text-color)'
+            }}>
+                <div style={{
+                    fontSize: '1.5rem',
+                    animation: 'fadeInUp 0.6s ease-out'
+                }}>
+                    Loading...
+                </div>
+            </div>
+        );
     }
 
-    return account && (
+    return data && (
         <div className='layout'>
             <Header handleLogout={handleLogout} />
             <div className="wrap">
-                <Outlet context={{ user: account, setAccount }} />
+                <Outlet context={{ user: data, refetch }} />
             </div>
         </div>
-    )
-}
+    );
+};

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useDebounce } from "../../../../hooks";
 
 interface Props {
     onSearch: (query: string) => void;
@@ -7,15 +8,11 @@ interface Props {
 
 export const SearchBar: React.FC<Props> = ({ onSearch, isLoading }) => {
     const [query, setQuery] = useState("");
+    const debouncedQuery = useDebounce(query, 500);
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            onSearch(query);
-        }, 500);
-
-        return () => clearTimeout(timer);
-    }, [query]);
-
+        onSearch(debouncedQuery);
+    }, [debouncedQuery]);
 
     const handleClear = () => {
         setQuery("");

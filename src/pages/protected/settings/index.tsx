@@ -1,32 +1,29 @@
 import { useOutletContext } from "react-router-dom";
 import type { IAccount, IContext } from "../../../types/utility";
-import { Axios } from "../../../config/Axios";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { Profile } from './components/Profile';
 import { Privacy } from './components/privacy';
 import { Password } from './components/Password';
 import { useState } from "react";
+import { accountService } from "../../../services";
 import { AxiosError } from "axios";
+
+interface ApiErrorResponse {
+    message?: string;
+}
 
 export interface Form extends IAccount {
     newPassword: string;
     confirmPassword: string;
 }
 
-interface ApiErrorResponse {
-    message?: string;
-}
-
-interface AvatarResponse {
-    picture: string;
-}
-
 export const Settings = () => {
-    const { user, setAccount } = useOutletContext<IContext>();
+    const { user, refetch } = useOutletContext<IContext>();
     const { register, handleSubmit, reset } = useForm<Form>({
         defaultValues: {
             bio: user.bio,
-            isAccountPrivate: user.isAccountPrivate
+            isAccountPrivate: user.isAccountPrivate,
+            theme: user.theme
         }
     });
 
@@ -34,7 +31,7 @@ export const Settings = () => {
     const [successMessage, setSuccessMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
@@ -51,55 +48,44 @@ export const Settings = () => {
         }
 
         setIsLoading(true);
-        const formData = new FormData();
-        formData.append('profile-pic', file);
 
-        Axios.patch<AvatarResponse>('/account/avatar', formData)
-            .then(response => {
-                setAccount(prev => prev ? {
-                    ...prev,
-                    avatar: response.data.picture
-                } : null);
-                setSuccessMessage('Profile picture updated successfully!');
-                setError("");
-                setTimeout(() => setSuccessMessage(""), 3000);
-            })
-            .catch((err: unknown) => {
-                const axiosError = err as AxiosError<ApiErrorResponse>;
-                console.error('Error uploading avatar:', axiosError);
-                setError(axiosError.response?.data?.message || 'Failed to upload avatar');
-            })
-            .finally(() => {
-                setIsLoading(false);
-            });
+        try {
+            const response = await accountService.uploadAvatar(file);
+            await refetch();
+            setSuccessMessage('Profile picture updated successfully!');
+            setError("");
+            setTimeout(() => setSuccessMessage(""), 3000);
+        } catch (err) {
+            const error = err as AxiosError<ApiErrorResponse>;
+            console.error('Error uploading avatar:', error);
+            setError(error.response?.data?.message || 'Failed to upload avatar');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-    const handleRemoveAvatar = () => {
+    const handleRemoveAvatar = async () => {
         if (!confirm('Are you sure you want to remove your profile picture?')) return;
 
         setIsLoading(true);
-        Axios.delete('/account/avatar')
-            .then(() => {
-                setAccount(prev => prev ? {
-                    ...prev,
-                    avatar: ''
-                } : null);
-                setSuccessMessage('Profile picture removed successfully!');
-                setError("");
-                setTimeout(() => setSuccessMessage(""), 3000);
-            })
-            .catch((err: unknown) => {
-                const axiosError = err as AxiosError<ApiErrorResponse>;
-                console.error('Error removing avatar:', axiosError);
-                setError(axiosError.response?.data?.message || 'Failed to remove avatar');
-            })
-            .finally(() => {
-                setIsLoading(false);
-            });
+
+        try {
+            await accountService.deleteAvatar();
+            await refetch();
+            setSuccessMessage('Profile picture removed successfully!');
+            setError("");
+            setTimeout(() => setSuccessMessage(""), 3000);
+        } catch (err) {
+            const error = err as AxiosError<ApiErrorResponse>;
+            console.error('Error removing avatar:', error);
+            setError(error.response?.data?.message || 'Failed to remove avatar');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-    const submit: SubmitHandler<Form> = (form) => {
-        const { password, newPassword, confirmPassword, bio, isAccountPrivate } = form;
+    const submit: SubmitHandler<Form> = async (form) => {
+        const { password, newPassword, confirmPassword, bio, isAccountPrivate, theme } = form;
 
         setError("");
         setSuccessMessage("");
@@ -107,81 +93,85 @@ export const Settings = () => {
 
         const promises: Promise<unknown>[] = [];
 
-        // Password change
-        if (password && newPassword) {
-            if (newPassword !== confirmPassword) {
-                setError("New passwords do not match");
+        try {
+            // Password change
+            if (password && newPassword) {
+                if (newPassword !== confirmPassword) {
+                    setError("New passwords do not match");
+                    setIsLoading(false);
+                    return;
+                }
+
+                if (newPassword.length < 8) {
+                    setError("Password must be at least 8 characters long");
+                    setIsLoading(false);
+                    return;
+                }
+
+                promises.push(
+                    accountService.updatePassword({ 
+                        currentPassword: password, 
+                        newPassword 
+                    })
+                );
+            }
+
+            // Bio update
+            if (bio !== user.bio) {
+                promises.push(
+                    accountService.updateBio({ bio })
+                );
+            }
+
+            // Privacy update
+            if (isAccountPrivate !== user.isAccountPrivate) {
+                promises.push(
+                    accountService.updatePrivacy({ isAccountPrivate })
+                );
+            }
+
+            // Theme update
+            if (theme !== user.theme) {
+                promises.push(
+                    accountService.updateTheme({ theme })
+                );
+            }
+
+            if (promises.length === 0) {
+                setError("No changes to save");
                 setIsLoading(false);
                 return;
             }
 
-            if (newPassword.length < 8) {
-                setError("Password must be at least 8 characters long");
-                setIsLoading(false);
-                return;
-            }
+            await Promise.all(promises);
 
-            promises.push(
-                Axios.patch("/account/settings/password", { 
-                    currentPassword: password, 
-                    newPassword 
-                })
-            );
-        }
-
-        // Bio update
-        if (bio !== user.bio) {
-            promises.push(
-                Axios.patch("/account/bio", { bio })
-            );
-        }
-
-        // Privacy update
-        if (isAccountPrivate !== user.isAccountPrivate) {
-            promises.push(
-                Axios.patch("/account/privacy", { isAccountPrivate })
-            );
-        }
-
-        if (promises.length === 0) {
-            setError("No changes to save");
-            setIsLoading(false);
-            return;
-        }
-
-        Promise.all(promises)
-            .then(() => {
-                setSuccessMessage('Settings updated successfully!');
-                setAccount(prev => prev ? {
-                    ...prev,
-                    bio: bio || prev.bio,
-                    isAccountPrivate: isAccountPrivate ?? prev.isAccountPrivate
-                } : null);
-                
-                // Clear password fields
-                reset({
-                    bio,
-                    isAccountPrivate,
-                    password: '',
-                    newPassword: '',
-                    confirmPassword: ''
-                });
-                
-                setTimeout(() => setSuccessMessage(""), 3000);
-            })
-            .catch((err: unknown) => {
-                const axiosError = err as AxiosError<ApiErrorResponse>;
-                setError(axiosError.response?.data?.message || 'Failed to update settings');
-            })
-            .finally(() => {
-                setIsLoading(false);
+            setSuccessMessage('Settings updated successfully!');
+            await refetch();
+            
+            // Clear password fields
+            reset({
+                bio,
+                isAccountPrivate,
+                theme,
+                password: '',
+                newPassword: '',
+                confirmPassword: ''
             });
+            
+            setTimeout(() => setSuccessMessage(""), 3000);
+        } catch (err) {
+            const error = err as AxiosError<ApiErrorResponse>;
+            setError(error.response?.data?.message || 'Failed to update settings');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleCancel = () => {
         reset({
             bio: user.bio,
             isAccountPrivate: user.isAccountPrivate,
+            theme: user.theme,
             password: '',
             newPassword: '',
             confirmPassword: ''

@@ -1,34 +1,21 @@
 import { Link } from "react-router-dom";
 import { Image } from "../../helpers/Image";
-
-interface User {
-    id: number;
-    login?: string;
-    username?: string;
-    avatar: string;
-    bio?: string;
-    isFollowing?: boolean;
-    isFollower?: boolean;
-    isFriend?: boolean;
-    followersCount?: number;
-}
+import type { IUserSafe } from "../../../../types/utility";
 
 interface Props {
-    user: User;
+    user: IUserSafe;
     currentUserId: number;
+    isFollowing?: boolean;
     onFollow: (userId: number) => void;
     onUnfollow: (userId: number) => void;
 }
 
-export const UserCard: React.FC<Props> = ({ user, currentUserId, onFollow, onUnfollow }) => {
+export const UserCard: React.FC<Props> = ({ user, currentUserId, isFollowing = false, onFollow, onUnfollow }) => {
     const isCurrentUser = user.id === currentUserId;
-    const displayName = user.username || user.login || 'User';
+    const displayName = user.username || 'User';
 
     const getBadge = () => {
         if (isCurrentUser) return null;
-        if (user.isFriend) return <span className="user-card__badge user-card__badge--friend">🤝 Friend</span>;
-        if (user.isFollowing && user.isFollower) return <span className="user-card__badge user-card__badge--mutual">↔️ Mutual</span>;
-        if (user.isFollower) return <span className="user-card__badge user-card__badge--follower">👋 Follows you</span>;
         return null;
     };
 
@@ -41,7 +28,7 @@ export const UserCard: React.FC<Props> = ({ user, currentUserId, onFollow, onUnf
             );
         }
 
-        if (user.isFollowing) {
+        if (isFollowing) {
             return (
                 <button
                     className="user-card__button user-card__button--unfollow"
@@ -82,24 +69,18 @@ export const UserCard: React.FC<Props> = ({ user, currentUserId, onFollow, onUnf
                         {user.bio.length > 80 ? `${user.bio.slice(0, 80)}...` : user.bio}
                     </p>
                 )}
-
-                {user.followersCount !== undefined && (
-                    <p className="user-card__stats">
-                        <span className="user-card__stat">
-                            👥 {user.followersCount} {user.followersCount === 1 ? 'follower' : 'followers'}
-                        </span>
-                    </p>
-                )}
             </div>
 
             <div className="user-card__actions">
                 {getActionButton()}
-                <Link
-                    to={`/account/profile/${user.id}`}
-                    className="user-card__button user-card__button--view"
-                >
-                    View Profile
-                </Link>
+                {!isCurrentUser && (
+                    <Link
+                        to={`/account/profile/${user.id}`}
+                        className="user-card__button user-card__button--view"
+                    >
+                        View Profile
+                    </Link>
+                )}
             </div>
         </div>
     );

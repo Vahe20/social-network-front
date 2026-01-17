@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useOutletContext } from "react-router-dom";
-import type { IAccount, IContext } from "../../../types/utility";
+import type { IContext, IUserSafe } from "../../../types/utility";
+import { useDebounce } from "../../../hooks";
 import { Axios } from "../../../config/Axios";
 import { SearchBar } from "./components/SearchBar";
 import { UserCard } from "./components/UserCard";
@@ -13,58 +14,64 @@ interface ApiErrorResponse {
 }
 
 export const Subscriptions = () => {
-    const { user } = useOutletContext<IContext>();
+    const { user, refetch } = useOutletContext<IContext>();
 
     const [activeTab, setActiveTab] = useState<'search' | 'following' | 'followers'>('search');
     const [searchQuery, setSearchQuery] = useState("");
-    const [searchResults, setSearchResults] = useState<IAccount[]>([]);
-    const [following, setFollowing] = useState<IAccount[]>([]);
-    const [followers, setFollowers] = useState<IAccount[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [searchResults, setSearchResults] = useState<IUserSafe[]>([]);
+    const [following, setFollowing] = useState<IUserSafe[]>([]);
+    const [followers, setFollowers] = useState<IUserSafe[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
     const [error, setError] = useState("");
+
+    const debouncedSearchQuery = useDebounce(searchQuery, 500);
+
+
+    useEffect(() => {
+        if (debouncedSearchQuery.trim()) {
+            performSearch(debouncedSearchQuery);
+        } else {
+            setSearchResults([]);
+        }
+    }, [debouncedSearchQuery]);
+
+    const loadFollowing = useCallback(() => {
+        const followingUsers = user.followings
+            .filter(f => f.receiver)
+            .map(f => f.receiver);
+        setFollowing(followingUsers);
+    }, [user.followings]);
+
+    const loadFollowers = useCallback(() => {
+        const followerUsers = user.followers
+            .filter(f => f.sender)
+            .map(f => f.sender);
+        setFollowers(followerUsers);
+    }, [user.followers]);
 
     useEffect(() => {
         loadFollowing();
         loadFollowers();
-    }, [activeTab]);
+    }, [loadFollowing, loadFollowers]);
 
-    const loadFollowing = async () => {
-        try {
-            setFollowing(user.followings);
-        } catch (err) {
-            console.error('Error loading following:', err);
-        }
-    };
-
-    const loadFollowers = async () => {
-        try {
-            setFollowers(user.followers);
-        } catch (err) {
-            console.error('Error loading followers:', err);
-        }
-    };
-
-    const handleSearch = async (query: string) => {
-        setSearchQuery(query);
-
-        if (!query.trim()) {
-            setSearchResults([]);
-            return;
-        }
-
-        setIsLoading(true);
+    const performSearch = async (query: string) => {
+        setIsSearching(true);
         setError("");
 
         try {
-            const response = await Axios.get<{ users: IAccount[] }>(`/account/search/${query}`);
+            const response = await Axios.get<{ users: IUserSafe[] }>(`/account/search/${query}`);
             setSearchResults(response.data.users);
         } catch (err) {
             const axiosError = err as AxiosError<ApiErrorResponse>;
             setError(axiosError.response?.data?.message || 'Failed to search users');
             setSearchResults([]);
         } finally {
-            setIsLoading(false);
+            setIsSearching(false);
         }
+    };
+
+    const handleSearch = (query: string) => {
+        setSearchQuery(query);
     };
 
     const handleFollow = async (userId: number) => {
@@ -75,6 +82,7 @@ export const Subscriptions = () => {
                 prev.map(u => u.id === userId ? { ...u, isFollowing: true } : u)
             );
 
+            await refetch();
             loadFollowing();
         } catch (err) {
             const axiosError = err as AxiosError<ApiErrorResponse>;
@@ -86,14 +94,15 @@ export const Subscriptions = () => {
         if (!confirm('Are you sure you want to unfollow this user?')) return;
 
         try {
-            await Axios.delete(`/follow/${userId}`);
+            await Axios.post(`/follow/${userId}`);
 
             setSearchResults(prev =>
                 prev.map(u => u.id === userId ? { ...u, isFollowing: false } : u)
             );
+
             setFollowing(prev => prev.filter(u => u.id !== userId));
 
-            loadFollowing();
+            await refetch();
         } catch (err) {
             const axiosError = err as AxiosError<ApiErrorResponse>;
             setError(axiosError.response?.data?.message || 'Failed to unfollow user');
@@ -146,7 +155,7 @@ export const Subscriptions = () => {
 
                 <SearchBar
                     onSearch={handleSearch}
-                    isLoading={isLoading}
+                    isLoading={isSearching}
                 />
 
                 <Tabs
@@ -159,22 +168,28 @@ export const Subscriptions = () => {
                 />
 
                 <div className="subscriptions__content">
-                    {isLoading && activeTab === 'search' ? (
+                    {isSearching && activeTab === 'search' ? (
                         <div className="subscriptions__loading">
                             <div className="subscriptions__spinner"></div>
                             <p>Searching...</p>
                         </div>
                     ) : getCurrentList().length > 0 ? (
                         <div className="subscriptions__grid">
-                            {getCurrentList().map(userItem => (
-                                <UserCard
-                                    key={userItem.id}
-                                    user={userItem}
-                                    currentUserId={user.id}
-                                    onFollow={handleFollow}
-                                    onUnfollow={handleUnfollow}
-                                />
-                            ))}
+                            {getCurrentList().map(userItem => {
+                                // Проверяем, подписаны ли мы на этого пользователя
+                                const isFollowing = following.some(f => f.id === userItem.id);
+
+                                return (
+                                    <UserCard
+                                        key={userItem.id}
+                                        user={userItem}
+                                        currentUserId={user.id}
+                                        isFollowing={isFollowing}
+                                        onFollow={handleFollow}
+                                        onUnfollow={handleUnfollow}
+                                    />
+                                );
+                            })}
                         </div>
                     ) : (
                         <div className="subscriptions__empty">
