@@ -15,7 +15,7 @@ interface ApiErrorResponse {
 }
 
 export const Profile = () => {
-    const { userId } = useParams<{ userId: string }>();
+    const { username } = useParams<{ username: string }>();
     const navigate = useNavigate();
     const { user: currentUser, refetch } = useOutletContext<IContext>();
 
@@ -26,25 +26,24 @@ export const Profile = () => {
     const [isPending, setIsPending] = useState(false);
 
     useEffect(() => {
-        if (!userId) {
+        if (!username) {
             navigate("/account/home");
             return;
         }
 
         loadUserProfile();
-    }, [userId, currentUser]);
+    }, [username, currentUser]);
 
     const loadUserProfile = async () => {
-        if (!userId) return;
+        if (!username) return;
 
         setLoading(true);
         setError("");
 
         try {
-            const response = await userService.getUserById(Number(userId));
+            const response = await userService.getUserByUsername(username);
             const userData = response.data.user;
 
-            // Проверяем статус подписки
             const following = currentUser.followings.find(
                 f => f.receiver?.id === userData.id
             );
@@ -52,7 +51,6 @@ export const Profile = () => {
             setIsFollowing(following?.approved || false);
             setIsPending(following ? !following.approved : false);
 
-            // Если это приватный аккаунт и мы не подписаны, не показываем посты
             if (userData.isAccountPrivate && !following?.approved && userData.id !== currentUser.id) {
                 setProfileData({
                     user: userData,
@@ -61,7 +59,7 @@ export const Profile = () => {
             } else {
                 setProfileData({
                     user: userData,
-                    posts: [] // Здесь должны быть посты пользователя из API
+                    posts: []
                 });
             }
         } catch (err) {

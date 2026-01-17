@@ -31,7 +31,8 @@ export const UserProfile: React.FC<Props> = ({
                     className="user-profile__button user-profile__button--pending"
                     onClick={onUnfollow}
                 >
-                    ⏳ Pending
+                    <span className="button-icon">⏳</span>
+                    <span>Pending</span>
                 </button>
             );
         }
@@ -42,7 +43,8 @@ export const UserProfile: React.FC<Props> = ({
                     className="user-profile__button user-profile__button--unfollow"
                     onClick={onUnfollow}
                 >
-                    ✓ Following
+                    <span className="button-icon">✓</span>
+                    <span>Following</span>
                 </button>
             );
         }
@@ -52,42 +54,85 @@ export const UserProfile: React.FC<Props> = ({
                 className="user-profile__button user-profile__button--follow"
                 onClick={onFollow}
             >
-                {user.isAccountPrivate ? '🔒 Request to Follow' : '+ Follow'}
+                {user.isAccountPrivate ? (
+                    <>
+                        <span className="button-icon">🔒</span>
+                        <span>Request to Follow</span>
+                    </>
+                ) : (
+                    <>
+                        <span className="button-icon">+</span>
+                        <span>Follow</span>
+                    </>
+                )}
             </button>
         );
     };
 
     return (
         <div className="user-profile__card">
-            <div className="user-profile__header">
-                <div className="user-profile__avatar">
-                    <Image src={user.avatar} />
+            <div className="user-profile__cover">
+                <div className="user-profile__cover-gradient"></div>
+            </div>
+            
+            <div className="user-profile__content">
+                <div className="user-profile__main">
+                    <div className="user-profile__avatar-wrapper">
+                        <div className="user-profile__avatar">
+                            <Image src={user.avatar} />
+                        </div>
+                        {user.isAccountPrivate && (
+                            <div className="user-profile__privacy-badge">
+                                <span>🔒</span>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="user-profile__info">
+                        <div className="user-profile__header-content">
+                            <h1 className="user-profile__username">
+                                {user.username}
+                                {isCurrentUser && (
+                                    <span className="user-profile__badge">You</span>
+                                )}
+                            </h1>
+                            <p className="user-profile__fullname">
+                                {user.firstName} {user.lastName}
+                            </p>
+                        </div>
+
+                        {!isCurrentUser && (
+                            <div className="user-profile__actions">
+                                {getActionButton()}
+                            </div>
+                        )}
+                    </div>
                 </div>
-                <div className="user-profile__info">
-                    <h1 className="user-profile__username">
-                        {user.username}
-                        {isCurrentUser && <span className="user-profile__badge"> (You)</span>}
-                    </h1>
-                    <p className="user-profile__name">
-                        {user.firstName} {user.lastName}
-                    </p>
-                    {user.isAccountPrivate && (
-                        <span className="user-profile__privacy">
-                            🔒 Private Account
-                        </span>
-                    )}
-                </div>
-                <div className="user-profile__actions">
-                    {getActionButton()}
+
+                {user.bio && (
+                    <div className="user-profile__bio">
+                        <div className="user-profile__bio-icon">📝</div>
+                        <p>{user.bio}</p>
+                    </div>
+                )}
+
+                <div className="user-profile__stats">
+                    <div className="user-profile__stat">
+                        <div className="user-profile__stat-value">0</div>
+                        <div className="user-profile__stat-label">Posts</div>
+                    </div>
+                    <div className="user-profile__stat-divider"></div>
+                    <div className="user-profile__stat">
+                        <div className="user-profile__stat-value">0</div>
+                        <div className="user-profile__stat-label">Followers</div>
+                    </div>
+                    <div className="user-profile__stat-divider"></div>
+                    <div className="user-profile__stat">
+                        <div className="user-profile__stat-value">0</div>
+                        <div className="user-profile__stat-label">Following</div>
+                    </div>
                 </div>
             </div>
-
-            {user.bio && (
-                <div className="user-profile__bio">
-                    <h3>Bio</h3>
-                    <p>{user.bio}</p>
-                </div>
-            )}
         </div>
     );
 };
