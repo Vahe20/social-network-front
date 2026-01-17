@@ -2,11 +2,11 @@ import { useState, useEffect, useCallback } from "react";
 import { useOutletContext } from "react-router-dom";
 import type { IContext, IUserSafe } from "../../../types/utility";
 import { useDebounce } from "../../../hooks";
-import { Axios } from "../../../config/Axios";
 import { SearchBar } from "./components/SearchBar";
 import { UserCard } from "./components/UserCard";
 import { Tabs } from "./components/Tabs";
 import { AxiosError } from "axios";
+import { userService } from "../../../services";
 
 
 interface ApiErrorResponse {
@@ -59,7 +59,7 @@ export const Subscriptions = () => {
         setError("");
 
         try {
-            const response = await Axios.get<{ users: IUserSafe[] }>(`/account/search/${query}`);
+            const response = await userService.searchUsers(query);
             setSearchResults(response.data.users);
         } catch (err) {
             const axiosError = err as AxiosError<ApiErrorResponse>;
@@ -76,14 +76,9 @@ export const Subscriptions = () => {
 
     const handleFollow = async (userId: number) => {
         try {
-            await Axios.post(`/follow/${userId}`);
-
-            setSearchResults(prev =>
-                prev.map(u => u.id === userId ? { ...u, isFollowing: true } : u)
-            );
+            await userService.followUser(userId);
 
             await refetch();
-            loadFollowing();
         } catch (err) {
             const axiosError = err as AxiosError<ApiErrorResponse>;
             setError(axiosError.response?.data?.message || 'Failed to follow user');
@@ -94,13 +89,7 @@ export const Subscriptions = () => {
         if (!confirm('Are you sure you want to unfollow this user?')) return;
 
         try {
-            await Axios.post(`/follow/${userId}`);
-
-            setSearchResults(prev =>
-                prev.map(u => u.id === userId ? { ...u, isFollowing: false } : u)
-            );
-
-            setFollowing(prev => prev.filter(u => u.id !== userId));
+            await userService.unfollowUser(userId);
 
             await refetch();
         } catch (err) {
@@ -176,7 +165,6 @@ export const Subscriptions = () => {
                     ) : getCurrentList().length > 0 ? (
                         <div className="subscriptions__grid">
                             {getCurrentList().map(userItem => {
-                                // Проверяем, подписаны ли мы на этого пользователя
                                 const isFollowing = following.some(f => f.id === userItem.id);
 
                                 return (

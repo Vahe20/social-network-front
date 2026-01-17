@@ -13,6 +13,7 @@ interface ApiErrorResponse {
 }
 
 export interface Form extends IAccount {
+    password: string;
     newPassword: string;
     confirmPassword: string;
 }
@@ -35,13 +36,11 @@ export const Settings = () => {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        // Validate file type
         if (!file.type.startsWith('image/')) {
             setError('Please select a valid image file');
             return;
         }
 
-        // Validate file size (max 5MB)
         if (file.size > 5 * 1024 * 1024) {
             setError('Image size should be less than 5MB');
             return;
@@ -50,7 +49,7 @@ export const Settings = () => {
         setIsLoading(true);
 
         try {
-            const response = await accountService.uploadAvatar(file);
+            await accountService.uploadAvatar(file);
             await refetch();
             setSuccessMessage('Profile picture updated successfully!');
             setError("");
@@ -94,7 +93,6 @@ export const Settings = () => {
         const promises: Promise<unknown>[] = [];
 
         try {
-            // Password change
             if (password && newPassword) {
                 if (newPassword !== confirmPassword) {
                     setError("New passwords do not match");
@@ -109,31 +107,22 @@ export const Settings = () => {
                 }
 
                 promises.push(
-                    accountService.updatePassword({ 
-                        currentPassword: password, 
-                        newPassword 
+                    accountService.updatePassword({
+                        currentPassword: password,
+                        newPassword
                     })
                 );
             }
 
-            // Bio update
             if (bio !== user.bio) {
                 promises.push(
                     accountService.updateBio({ bio })
                 );
             }
 
-            // Privacy update
             if (isAccountPrivate !== user.isAccountPrivate) {
                 promises.push(
                     accountService.updatePrivacy({ isAccountPrivate })
-                );
-            }
-
-            // Theme update
-            if (theme !== user.theme) {
-                promises.push(
-                    accountService.updateTheme({ theme })
                 );
             }
 
@@ -147,8 +136,7 @@ export const Settings = () => {
 
             setSuccessMessage('Settings updated successfully!');
             await refetch();
-            
-            // Clear password fields
+
             reset({
                 bio,
                 isAccountPrivate,
@@ -157,7 +145,7 @@ export const Settings = () => {
                 newPassword: '',
                 confirmPassword: ''
             });
-            
+
             setTimeout(() => setSuccessMessage(""), 3000);
         } catch (err) {
             const error = err as AxiosError<ApiErrorResponse>;
@@ -184,13 +172,13 @@ export const Settings = () => {
         <div className="settings">
             <div className="settings__container">
                 <h1 className="settings__title">Settings</h1>
-                
+
                 {error && (
                     <div className="error">
                         {error}
                     </div>
                 )}
-                
+
                 {successMessage && (
                     <div style={{
                         marginBottom: '20px',
@@ -208,7 +196,7 @@ export const Settings = () => {
                         {successMessage}
                     </div>
                 )}
-                
+
                 <form onSubmit={handleSubmit(submit)}>
                     <Profile
                         user={user}
@@ -228,15 +216,15 @@ export const Settings = () => {
                     />
 
                     <div className="settings__actions">
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             className="settings__save-btn"
                             disabled={isLoading}
                         >
                             {isLoading ? 'Saving...' : 'Save Changes'}
                         </button>
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             className="settings__cancel-btn"
                             onClick={handleCancel}
                             disabled={isLoading}
