@@ -1,12 +1,12 @@
 import { Axios } from "../config/Axios";
-import type { IUserSafe, IFollowers } from "../types/utility";
+import type { IUserSafe, IFollowers, IAccount } from "../types/utility";
 
 interface SearchUsersResponse {
 	users: IUserSafe[];
 }
 
 interface GetUserResponse {
-	user: IUserSafe;
+	user: IAccount;
 }
 
 interface FollowRequestsResponse {
@@ -39,10 +39,10 @@ export const userService = {
 	},
 
 	acceptFollowRequest: async (requestId: number) => {
-		return Axios.post(`/follow/requests/accept/${requestId}`);
+		return Axios.patch(`/follow/requests/accept/${requestId}`);
 	},
 
 	rejectFollowRequest: async (requestId: number) => {
-		return Axios.delete(`/follow/requests/decline/${requestId}`);
+		return Axios.patch(`/follow/requests/decline/${requestId}`);
 	},
 };

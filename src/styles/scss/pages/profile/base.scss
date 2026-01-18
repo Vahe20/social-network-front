@@ -709,23 +709,6 @@
             gap: rem(8);
         }
     }
-
-    .meta-item {
-        display: flex;
-        align-items: center;
-        gap: rem(6);
-        color: var(--second-text-color);
-        font-size: rem(13);
-        font-weight: 500;
-
-        @include mobile {
-            font-size: rem(12);
-        }
-
-        .meta-icon {
-            font-size: rem(16);
-        }
-    }
 }
 
 // Animations

@@ -1,8 +1,8 @@
 import { Image } from "../../helpers/Image";
-import type { IUserSafe } from "../../../../types/utility";
+import type { IAccount } from "../../../../types/utility";
 
 interface Props {
-    user: IUserSafe;
+    user: IAccount;
     currentUserId: number;
     isFollowing: boolean;
     isPending: boolean;
@@ -74,7 +74,7 @@ export const UserProfile: React.FC<Props> = ({
             <div className="user-profile__cover">
                 <div className="user-profile__cover-gradient"></div>
             </div>
-            
+
             <div className="user-profile__content">
                 <div className="user-profile__main">
                     <div className="user-profile__avatar-wrapper">
@@ -118,17 +118,17 @@ export const UserProfile: React.FC<Props> = ({
 
                 <div className="user-profile__stats">
                     <div className="user-profile__stat">
-                        <div className="user-profile__stat-value">0</div>
+                        <div className="user-profile__stat-value">{user.posts.length}</div>
                         <div className="user-profile__stat-label">Posts</div>
                     </div>
                     <div className="user-profile__stat-divider"></div>
                     <div className="user-profile__stat">
-                        <div className="user-profile__stat-value">0</div>
+                        <div className="user-profile__stat-value">{user.followers.length}</div>
                         <div className="user-profile__stat-label">Followers</div>
                     </div>
                     <div className="user-profile__stat-divider"></div>
                     <div className="user-profile__stat">
-                        <div className="user-profile__stat-value">0</div>
+                        <div className="user-profile__stat-value">{user.followings.length}</div>
                         <div className="user-profile__stat-label">Following</div>
                     </div>
                 </div>

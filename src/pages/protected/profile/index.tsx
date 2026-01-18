@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useOutletContext } from "react-router-dom";
-import type { IContext, IUserSafe, IPost } from "../../../types/utility";
+import type { IContext, IPost, IAccount } from "../../../types/utility";
 import { userService } from "../../../services";
 import { AxiosError } from "axios";
 import { UserProfile, UserPosts } from "./components";
 
 interface UserProfileData {
-    user: IUserSafe;
+    user: IAccount;
     posts: IPost[];
 }
 
@@ -59,7 +59,7 @@ export const Profile = () => {
             } else {
                 setProfileData({
                     user: userData,
-                    posts: []
+                    posts: userData.posts
                 });
             }
         } catch (err) {

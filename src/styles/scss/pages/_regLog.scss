@@ -46,6 +46,7 @@
                 width: 100%;
                 transition: var(--transition);
                 background-color: transparent;
+                color: var(--text-color);
 
                 &:focus {
                     outline: none;

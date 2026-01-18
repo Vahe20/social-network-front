@@ -80,10 +80,6 @@ export const UserPosts: React.FC<Props> = ({ posts, isPrivate, isFollowing, isCu
                             </p>
                             <div className="user-post-card__meta">
                                 <span className="meta-item">
-                                    <span className="meta-icon">❤️</span>
-                                    {post.likesCount || 0} likes
-                                </span>
-                                <span className="meta-item">
                                     <span className="meta-icon">📅</span>
                                     {new Date(post.createdAt).toLocaleDateString('en-US', { 
                                         month: 'short', 
