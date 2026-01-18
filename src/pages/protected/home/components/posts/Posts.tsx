@@ -1,9 +1,10 @@
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import Modal from "react-modal";
-import { postService } from "../../../../services";
-import type { IPost } from "../../../../types/utility";
+import { postService } from "../../../../../services";
+import type { IPost } from "../../../../../types/utility";
+import PostsList from './PostsList';
 
 interface Props {
     posts: IPost[];
@@ -31,11 +32,9 @@ export const Posts: React.FC<Props> = ({ posts, currentUserId, refetch }) => {
     const [isLoading, setIsLoading] = useState(false);
     const { register, handleSubmit, reset } = useForm<PostFormData>();
 
-    useEffect(() => {
-        Modal.setAppElement("#root");
-    }, []);
+    Modal.setAppElement("#root");
 
-    const uploadPost = async (form: PostFormData) => {
+    const uploadPost = useCallback(async (form: PostFormData) => {
         setIsLoading(true);
 
         try {
@@ -58,9 +57,9 @@ export const Posts: React.FC<Props> = ({ posts, currentUserId, refetch }) => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [refetch, reset])
 
-    const handleDeletePost = async (postId: number) => {
+    const handleDeletePost = useCallback(async (postId: number) => {
         if (!confirm('Are you sure you want to delete this post?')) return;
 
         try {
@@ -71,7 +70,7 @@ export const Posts: React.FC<Props> = ({ posts, currentUserId, refetch }) => {
             console.error('Error deleting post:', err);
             alert(err.response?.data?.message || err.message || 'Failed to delete post');
         }
-    };
+    }, [refetch])
 
     return (
         <div className="posts">
@@ -137,44 +136,14 @@ export const Posts: React.FC<Props> = ({ posts, currentUserId, refetch }) => {
                 </div>
             </Modal>
 
-            <div className="posts__list">
-                {posts.length > 0 ? (
-                    posts.map((post, index) => (
-                        <div className="post" key={post.id} style={{ animationDelay: `${index * 0.1}s` }}>
-                            <div className="post__header">
-                                <div className="post__title">{post.title}</div>
-                                {post.authorId === currentUserId && (
-                                    <button
-                                        className="post__delete"
-                                        onClick={() => handleDeletePost(post.id)}
-                                        title="Delete post"
-                                    >
-                                        🗑️
-                                    </button>
-                                )}
-                            </div>
-                            <div className="post__body">
-                                {post.postImage && (
-                                    <img
-                                        src={`http://localhost:4002/${post.postImage}`}
-                                        alt={post.title}
-                                        className="post__image"
-                                        loading="lazy"
-                                    />
-                                )}
-                                <div className="post__description">{post.description}</div>
-                            </div>
-                            <div className="post__createdAt">
-                                📅 {new Date(post.createdAt).toLocaleString()}
-                            </div>
-                        </div>
-                    ))
-                ) : (
-                    <p className="posts__empty">
-                        📝 No posts yet. Create your first post!
-                    </p>
-                )}
-            </div>
+            <PostsList
+                posts={posts}
+                currentUserId={currentUserId}
+                handleDeletePost={handleDeletePost}
+            />
+
         </div>
     );
 };
+
+

@@ -1,2 +1,2 @@
 export { Profile } from "./Profile";
-export { Posts } from "./Posts";
+export { Posts } from "./posts";
