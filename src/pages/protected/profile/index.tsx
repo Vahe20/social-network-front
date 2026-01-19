@@ -151,6 +151,7 @@ export const Profile = () => {
                     isPrivate={profileData.user.isAccountPrivate}
                     isFollowing={isFollowing}
                     isCurrentUser={profileData.user.id === currentUser.id}
+                    currentUserId={currentUser.id}
                 />
             </div>
         </div>

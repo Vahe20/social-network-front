@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Image } from "../../helpers/Image";
+import { ProfileImage } from "../../helpers/Image";
 import type { IUserSafe } from "../../../../types/utility";
 
 interface Props {
@@ -11,13 +11,13 @@ interface Props {
     onUnfollow: (userId: number) => void;
 }
 
-export const UserCard: React.FC<Props> = ({ 
-    user, 
-    currentUserId, 
-    isFollowing = false, 
+export const UserCard: React.FC<Props> = ({
+    user,
+    currentUserId,
+    isFollowing = false,
     isPending = false,
-    onFollow, 
-    onUnfollow 
+    onFollow,
+    onUnfollow
 }) => {
     const isCurrentUser = user.id === currentUserId;
     const displayName = user.username || 'User';
@@ -78,7 +78,7 @@ export const UserCard: React.FC<Props> = ({
         <div className="user-card">
             <Link to={`/account/profile/${user.id}`} className="user-card__link">
                 <div className="user-card__avatar">
-                    <Image src={user.avatar} />
+                    <ProfileImage src={user.avatar} />
                 </div>
             </Link>
 

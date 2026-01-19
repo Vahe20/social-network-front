@@ -1,5 +1,3 @@
-// API Response Types based on OpenAPI specification
-
 export interface IUser {
 	firstName: string;
 	lastName: string;
@@ -23,11 +21,11 @@ export interface IUserSafe {
 export interface IFollowers {
 	approved: boolean;
 	createdAt: string;
-    from: number;
-    id: number;
-    sender: IAccount;
-    to: number;
-    updateAt: string;
+	from: number;
+	id: number;
+	sender: IAccount;
+	to: number;
+	updateAt: string;
 }
 
 export interface IFollowing {
@@ -44,13 +42,38 @@ export interface IPost {
 	id: number;
 	title: string;
 	description: string;
-	image?: string;
 	postImage?: string;
 	createdAt: string;
 	authorId: number;
 	author?: IUserSafe;
-	isLiked?: boolean;
-	likesCount?: number;
+}
+
+export interface IPostInfo extends IPost {
+	postComments: IPostComments[];
+	postReactions: IPostReaction[];
+}
+
+export interface IPostReaction {
+	id: number;
+	postId: number;
+	userId: number;
+	reactedBy: IUserSafe;
+}
+
+export interface IPostComments {
+	id: number;
+	postId: number;
+	userId: number;
+	text: string;
+	user: IUserSafe;
+	reactions: [
+		{
+			id: number;
+			commentId: number;
+			userId: number;
+			user: IUserSafe;
+		},
+	];
 }
 
 export interface IComment {
@@ -62,7 +85,6 @@ export interface IComment {
 	author?: IUserSafe;
 	reactionsCount?: number;
 }
-
 
 export interface IAccount extends IUserSafe {
 	posts: IPost[];

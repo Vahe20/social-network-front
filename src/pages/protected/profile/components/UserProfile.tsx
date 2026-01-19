@@ -1,4 +1,4 @@
-import { Image } from "../../helpers/Image";
+import { ProfileImage } from "../../helpers/Image";
 import type { IAccount } from "../../../../types/utility";
 
 interface Props {
@@ -79,7 +79,7 @@ export const UserProfile: React.FC<Props> = ({
                 <div className="user-profile__main">
                     <div className="user-profile__avatar-wrapper">
                         <div className="user-profile__avatar">
-                            <Image src={user.avatar} />
+                            <ProfileImage src={user.avatar} />
                         </div>
                         {user.isAccountPrivate && (
                             <div className="user-profile__privacy-badge">
@@ -91,7 +91,7 @@ export const UserProfile: React.FC<Props> = ({
                     <div className="user-profile__info">
                         <div className="user-profile__header-content">
                             <h1 className="user-profile__username">
-                                {user.username}
+                                @{user.username}
                                 {isCurrentUser && (
                                     <span className="user-profile__badge">You</span>
                                 )}

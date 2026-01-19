@@ -1,13 +1,25 @@
 import type { IPost } from "../../../../types/utility";
+import { PostCard } from "../../components/PostCard";
 
 interface Props {
     posts: IPost[];
     isPrivate: boolean;
     isFollowing: boolean;
     isCurrentUser: boolean;
+    currentUserId: number;
+    onDeletePost?: (id: number) => void;
+    onLikePost?: (id: number) => void;
 }
 
-export const UserPosts: React.FC<Props> = ({ posts, isPrivate, isFollowing, isCurrentUser }) => {
+export const UserPosts: React.FC<Props> = ({ 
+    posts, 
+    isPrivate, 
+    isFollowing, 
+    isCurrentUser,
+    currentUserId,
+    onDeletePost,
+    onLikePost
+}) => {
     if (isPrivate && !isFollowing && !isCurrentUser) {
         return (
             <div className="user-posts">
@@ -57,39 +69,14 @@ export const UserPosts: React.FC<Props> = ({ posts, isPrivate, isFollowing, isCu
             
             <div className="user-posts__grid">
                 {posts.map(post => (
-                    <div key={post.id} className="user-post-card">
-                        {post.postImage && (
-                            <div className="user-post-card__image">
-                                <img src={post.postImage} alt={post.title} />
-                                <div className="user-post-card__overlay">
-                                    <div className="overlay-stats">
-                                        <span className="stat-item">
-                                            <span className="stat-icon">❤️</span>
-                                            {post.likesCount || 0}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                        <div className="user-post-card__content">
-                            <h3 className="user-post-card__title">{post.title}</h3>
-                            <p className="user-post-card__description">
-                                {post.description.length > 150 
-                                    ? `${post.description.slice(0, 150)}...` 
-                                    : post.description}
-                            </p>
-                            <div className="user-post-card__meta">
-                                <span className="meta-item">
-                                    <span className="meta-icon">📅</span>
-                                    {new Date(post.createdAt).toLocaleDateString('en-US', { 
-                                        month: 'short', 
-                                        day: 'numeric',
-                                        year: 'numeric'
-                                    })}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+                    <PostCard 
+                        key={post.id}
+                        post={post}
+                        currentUserId={currentUserId}
+                        onDelete={onDeletePost}
+                        onLike={onLikePost}
+                        showAuthor={false}
+                    />
                 ))}
             </div>
         </div>

@@ -1,5 +1,6 @@
 import { useHttp } from "../../../../hooks";
 import type { ISearchResponse } from "../../../../types/utility";
+import { ProfileImage } from '../../helpers/Image';
 
 interface Props {
     username: string;
@@ -23,7 +24,7 @@ export const UserSearch: React.FC<Props> = ({ username }) => {
         return (
             <div className="user-search__error">
                 <p>❌ Error: {error}</p>
-                <button onClick={refetch}>🔄 Retry</button>
+                <button onClick={() => refetch}>🔄 Retry</button>
             </div>
         );
     }
@@ -43,10 +44,7 @@ export const UserSearch: React.FC<Props> = ({ username }) => {
                 {data.users.map((user) => (
                     <li key={user.id}>
                         <div className="user-card">
-                            <img
-                                src={user.avatar || '/default-avatar.png'}
-                                alt={user.username}
-                            />
+                            <ProfileImage src={user.avatar} />
                             <div>
                                 <h4>{user.firstName} {user.lastName}</h4>
                                 <p>@{user.username}</p>

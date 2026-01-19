@@ -1,50 +1,34 @@
 import { memo } from "react";
 import type { IPost } from "../../../../../types/utility"
+import { PostCard } from "../../../components/PostCard";
 
 interface props {
     posts: IPost[];
     currentUserId: number;
     handleDeletePost: (id: number) => void;
+    handleLikePost?: (id: number) => void;
 }
 
-const PostsList: React.FC<props> = ({ posts, currentUserId, handleDeletePost }) => {
+const PostsList: React.FC<props> = ({ posts, currentUserId, handleDeletePost, handleLikePost }) => {
     return (
-        <div className="posts__list">
+        <div className="posts__grid">
             {posts.length > 0 ? (
-                posts.map((post, index) => (
-                    <div className="post" key={post.id} style={{ animationDelay: `${index * 0.1}s` }}>
-                        <div className="post__header">
-                            <div className="post__title">{post.title}</div>
-                            {post.authorId === currentUserId && (
-                                <button
-                                    className="post__delete"
-                                    onClick={() => handleDeletePost(post.id)}
-                                    title="Delete post"
-                                >
-                                    🗑️
-                                </button>
-                            )}
-                        </div>
-                        <div className="post__body">
-                            {post.postImage && (
-                                <img
-                                    src={`http://localhost:4002/${post.postImage}`}
-                                    alt={post.title}
-                                    className="post__image"
-                                    loading="lazy"
-                                />
-                            )}
-                            <div className="post__description">{post.description}</div>
-                        </div>
-                        <div className="post__createdAt">
-                            📅 {new Date(post.createdAt).toLocaleString()}
-                        </div>
-                    </div>
+                posts.map((post) => (
+                    <PostCard 
+                        key={post.id}
+                        post={post}
+                        currentUserId={currentUserId}
+                        onDelete={handleDeletePost}
+                        onLike={handleLikePost}
+                        showAuthor={true}
+                    />
                 ))
             ) : (
-                <p className="posts__empty">
-                    📝 No posts yet. Create your first post!
-                </p>
+                <div className="posts__empty">
+                    <div className="posts__empty-icon">📝</div>
+                    <h3>No posts yet</h3>
+                    <p>Create your first post to get started!</p>
+                </div>
             )}
         </div>
     )

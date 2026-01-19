@@ -572,144 +572,22 @@
 
     &__grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(rem(320), 1fr));
-        gap: rem(24);
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 1.5rem;
 
         @include tablet {
-            grid-template-columns: repeat(auto-fill, minmax(rem(280), 1fr));
-            gap: rem(20);
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.25rem;
         }
 
         @include mobile {
             grid-template-columns: 1fr;
-            gap: rem(16);
+            gap: 1rem;
         }
     }
 }
 
-.user-post-card {
-    background: linear-gradient(135deg, var(--background_light) 0%, rgba(48, 54, 61, 0.4) 100%);
-    backdrop-filter: blur(rem(16));
-    border: 1px solid rgba(199, 199, 199, 0.1);
-    border-radius: rem(20);
-    overflow: hidden;
-    box-shadow: var(--boxShadow);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    animation: fadeInUp 0.6s ease-out backwards;
-
-    @for $i from 1 through 12 {
-        &:nth-child(#{$i}) {
-            animation-delay: #{0.7 + ($i * 0.05)}s;
-        }
-    }
-
-    &:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-        border-color: rgba(199, 199, 199, 0.2);
-
-        .user-post-card__overlay {
-            opacity: 1;
-        }
-    }
-
-    &__image {
-        width: 100%;
-        height: rem(240);
-        overflow: hidden;
-        position: relative;
-
-        @include mobile {
-            height: rem(200);
-        }
-
-        img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.4s ease;
-        }
-    }
-
-    &:hover &__image img {
-        transform: scale(1.1);
-    }
-
-    &__overlay {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
-        display: flex;
-        align-items: flex-end;
-        padding: rem(20);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .overlay-stats {
-        display: flex;
-        gap: rem(16);
-    }
-
-    .stat-item {
-        display: flex;
-        align-items: center;
-        gap: rem(6);
-        color: white;
-        font-size: rem(16);
-        font-weight: 600;
-
-        .stat-icon {
-            font-size: rem(20);
-        }
-    }
-
-    &__content {
-        padding: rem(20);
-
-        @include mobile {
-            padding: rem(16);
-        }
-    }
-
-    &__title {
-        font-size: rem(18);
-        font-weight: 700;
-        color: var(--text-color);
-        margin: 0 0 rem(12) 0;
-        line-height: 1.4;
-
-        @include mobile {
-            font-size: rem(16);
-        }
-    }
-
-    &__description {
-        color: var(--second-text-color);
-        line-height: 1.7;
-        margin: 0 0 rem(16) 0;
-        font-size: rem(14);
-
-        @include mobile {
-            font-size: rem(13);
-        }
-    }
-
-    &__meta {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-top: rem(16);
-        border-top: 1px solid rgba(199, 199, 199, 0.1);
-        gap: rem(12);
-
-        @include mobile {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: rem(8);
-        }
-    }
-}
+// PostCard styles are now in _post.scss
 
 // Animations
 @keyframes spin {

@@ -22,15 +22,6 @@
 	}
 }
 
-@keyframes shimmer {
-	0% {
-		background-position: -1000px 0;
-	}
-	100% {
-		background-position: 1000px 0;
-	}
-}
-
 @keyframes modalFadeIn {
 	from {
 		opacity: 0;
@@ -101,7 +92,6 @@
 		}
 	}
 
-	// Overlay стили
 	&__modal-overlay {
 		position: fixed;
 		top: 0;
@@ -125,7 +115,6 @@
 		}
 	}
 
-	// Modal стили
 	&__modal {
 		position: fixed;
 		top: 50%;
@@ -265,150 +254,45 @@
 		}
 	}
 
-	&__list {
+	&__grid {
 		display: grid;
-		gap: rem(20);
+		grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+		gap: 1.5rem;
 		animation: fadeInUp 0.6s ease-out 0.4s backwards;
+
+		@media (max-width: 768px) {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	&__empty {
-		text-align: center;
-		color: var(--second-text-color);
-		font-size: rem(18);
-		margin-top: rem(60);
-		padding: rem(40);
-		background: rgba(255, 255, 255, 0.03);
-		border-radius: rem(16);
-		border: 1px dashed rgba(199, 199, 199, 0.2);
-		animation: fadeInUp 0.6s ease-out;
-	}
-}
-
-.post {
-	background: linear-gradient(135deg, var(--background_light) 0%, rgba(48, 54, 61, 0.3) 100%);
-	border-radius: rem(20);
-	box-shadow: var(--boxShadow);
-	padding: rem(24) rem(28);
-	display: flex;
-	flex-direction: column;
-	gap: rem(14);
-	border: 1px solid rgba(199, 199, 199, 0.1);
-	transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-	position: relative;
-	overflow: hidden;
-	animation: fadeInUp 0.5s ease-out backwards;
-
-	&::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: rem(4);
-		background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
-		opacity: 0;
-		transition: opacity 0.3s;
-	}
-
-	&:hover {
-		box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-		transform: translateY(-4px) scale(1.01);
-		border-color: rgba(199, 199, 199, 0.2);
-
-		&::before {
-			opacity: 1;
-		}
-	}
-
-	@for $i from 1 through 10 {
-		&:nth-child(#{$i}) {
-			animation-delay: #{$i * 0.1}s;
-		}
-	}
-
-	&__header {
+		grid-column: 1 / -1;
 		display: flex;
-		justify-content: space-between;
+		flex-direction: column;
 		align-items: center;
-		gap: rem(12);
-	}
+		justify-content: center;
+		gap: 1rem;
+		padding: 4rem 2rem;
+		background: rgba(255, 255, 255, 0.03);
+		border-radius: 1rem;
+		border: 1px dashed rgba(199, 199, 199, 0.2);
+		text-align: center;
+		animation: fadeInUp 0.6s ease-out;
 
-	&__title {
-		font-size: rem(22);
-		font-weight: 700;
-		color: var(--text-color);
-		margin: 0;
-		background: linear-gradient(135deg, #ffffff, #a0a0a0);
-		background-clip: text;
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		flex: 1;
-	}
-
-	&__delete {
-		background: rgba(239, 68, 68, 0.1);
-		border: 1px solid rgba(239, 68, 68, 0.3);
-		border-radius: rem(10);
-		padding: rem(6) rem(12);
-		color: #ef4444;
-		cursor: pointer;
-		transition: all 0.3s ease;
-		font-size: rem(16);
-
-		&:hover {
-			background: rgba(239, 68, 68, 0.2);
-			border-color: rgba(239, 68, 68, 0.5);
-			transform: scale(1.1);
+		&-icon {
+			font-size: 3rem;
 		}
 
-		&:active {
-			transform: scale(0.95);
+		h3 {
+			font-size: 1.5rem;
+			color: var(--text-color);
+			margin: 0;
+		}
+
+		p {
+			font-size: 1rem;
+			color: var(--second-text-color);
+			margin: 0;
 		}
 	}
-
-	&__description {
-		font-size: rem(16);
-		color: var(--second-text-color);
-		line-height: 1.6;
-		word-break: break-word;
-	}
-
-	&__body {
-		display: flex;
-		gap: rem(40);
-	}
-
-	&__image {
-		max-width: rem(100);
-		max-height: rem(100);
-		object-fit: cover;
-		border-radius: rem(12);
-		margin-top: rem(8);
-		transition: transform 0.3s ease;
-		display: block;
-
-		&:hover {
-			transform: scale(1.02);
-		}
-	}
-
-	&__createdAt {
-		font-size: rem(13);
-		color: var(--second-text-color);
-		align-self: flex-end;
-		margin-top: rem(8);
-		padding: rem(6) rem(12);
-		background: rgba(255, 255, 255, 0.05);
-		border-radius: rem(8);
-		font-weight: 500;
-	}
-}
-
-// Анимация для скелетона загрузки
-.post-skeleton {
-	background: linear-gradient(90deg, rgba(48, 54, 61, 0.3) 25%, rgba(48, 54, 61, 0.5) 50%, rgba(48, 54, 61, 0.3) 75%);
-	background-size: 200% 100%;
-	animation: shimmer 1.5s infinite;
-	border-radius: rem(20);
-	height: rem(200);
 }

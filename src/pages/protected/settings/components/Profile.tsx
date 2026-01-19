@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { IAccount } from "../../../../types/utility";
-import { Image } from "../../helpers/Image";
+import { ProfileImage } from "../../helpers/Image";
 import type { UseFormRegister } from "react-hook-form";
 
 interface Props {
@@ -40,7 +40,7 @@ export const Profile: React.FC<Props> = ({
                 <label className="settings__label">Profile Picture</label>
                 <div className="settings__avatar-upload">
                     <div className="settings__avatar-preview">
-                        <Image src={user.avatar} />
+                        <ProfileImage src={user.avatar} />
                     </div>
                     <div className="settings__avatar-actions">
                         <label className="settings__upload-btn">

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Image } from "../../helpers/Image";
+import { ProfileImage } from "../../helpers/Image";
 import type { IFollowers } from "../../../../types/utility";
 
 interface Props {
@@ -12,9 +12,6 @@ export const RequestCard: React.FC<Props> = ({ request, onAccept, onReject }) =>
     const user = request.sender;
 
     if (!user) return null;
-
-    console.log("alala", request);
-
 
     const timeAgo = (date: string) => {
         const now = new Date();
@@ -34,7 +31,7 @@ export const RequestCard: React.FC<Props> = ({ request, onAccept, onReject }) =>
         <div className="request-card">
             <Link to={`/account/profile/${user.id}`} className="request-card__link">
                 <div className="request-card__avatar">
-                    <Image src={user.avatar} />
+                    <ProfileImage src={user.avatar} />
                 </div>
             </Link>
 

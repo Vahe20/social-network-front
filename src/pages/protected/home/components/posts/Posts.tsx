@@ -2,7 +2,7 @@ import type React from "react";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import Modal from "react-modal";
-import { postService } from "../../../../../services";
+import { postService, likeService } from "../../../../../services";
 import type { IPost } from "../../../../../types/utility";
 import PostsList from './PostsList';
 
@@ -69,6 +69,17 @@ export const Posts: React.FC<Props> = ({ posts, currentUserId, refetch }) => {
             const err = error as ApiError;
             console.error('Error deleting post:', err);
             alert(err.response?.data?.message || err.message || 'Failed to delete post');
+        }
+    }, [refetch])
+
+    const handleLikePost = useCallback(async (postId: number) => {
+        try {
+            await likeService.toggleLike(postId);
+            refetch()
+        } catch (error) {
+            const err = error as ApiError;
+            console.error('Error liking post:', err);
+            alert(err.response?.data?.message || err.message || 'Failed to like post');
         }
     }, [refetch])
 
@@ -140,6 +151,7 @@ export const Posts: React.FC<Props> = ({ posts, currentUserId, refetch }) => {
                 posts={posts}
                 currentUserId={currentUserId}
                 handleDeletePost={handleDeletePost}
+                handleLikePost={handleLikePost}
             />
 
         </div>

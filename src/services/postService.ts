@@ -1,5 +1,5 @@
 import { Axios } from "../config/Axios";
-import type { ICreatePostRequest, IPost } from "../types/utility";
+import type { ICreatePostRequest, IPost, IPostInfo } from "../types/utility";
 
 interface CreatePostResponse {
 	post: IPost;
@@ -10,7 +10,7 @@ interface GetPostsResponse {
 }
 
 interface GetPostResponse {
-	post: IPost;
+	postInfo: IPostInfo;
 }
 
 export const postService = {

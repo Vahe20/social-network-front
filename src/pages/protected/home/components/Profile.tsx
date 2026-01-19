@@ -1,6 +1,6 @@
 import React, { useRef } from "react"
 import type { IAccount } from "../../../../types/utility"
-import { Image } from "../../helpers/Image"
+import { ProfileImage } from "../../helpers/Image"
 import { accountService } from "../../../../services"
 
 interface Props {
@@ -14,7 +14,7 @@ export const Profile: React.FC<Props> = ({ user, refetch }) => {
     const sendFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (!file) return
-        
+
         try {
             await accountService.uploadAvatar(file);
             await refetch();
@@ -29,7 +29,7 @@ export const Profile: React.FC<Props> = ({ user, refetch }) => {
             <div className="profile__card">
                 <div className="profile__avatar">
                     <div className="avatar-frame">
-                        <Image src={user.avatar} />
+                        <ProfileImage src={user.avatar} />
 
                         <button
                             className="avatar-edit"
