@@ -14,7 +14,7 @@ interface GetPostResponse {
 }
 
 export const postService = {
-	createPost: (data: ICreatePostRequest) => {
+	createPost: async (data: ICreatePostRequest) => {
 		const formData = new FormData();
 		formData.append("title", data.title);
 		formData.append("description", data.description);
@@ -29,15 +29,15 @@ export const postService = {
 		});
 	},
 
-	getPosts: () => {
+	getPosts: async () => {
 		return Axios.get<GetPostsResponse>("/posts");
 	},
 
-	getPostById: (postId: number) => {
+	getPostById: async (postId: number) => {
 		return Axios.get<GetPostResponse>(`/posts/${postId}`);
 	},
 
-	deletePost: (postId: number) => {
+	deletePost: async (postId: number) => {
 		return Axios.delete(`/posts/${postId}`);
 	},
 };

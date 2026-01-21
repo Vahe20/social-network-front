@@ -33,8 +33,10 @@ export const Signup = () => {
 
     return (
         <div className="regLog">
-            <Header error={error} />
-            <Form handleRegister={handleRegister} isLoading={isLoading} />
+            <div className="regLog__container">
+                <Header error={error} />
+                <Form handleRegister={handleRegister} isLoading={isLoading} />
+            </div>
         </div>
     );
 };

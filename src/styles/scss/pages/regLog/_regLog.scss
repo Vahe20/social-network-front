@@ -1,78 +1,340 @@
-@use "../../helpers/index"as *;
+@use "../../helpers/index" as *;
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
 
 .regLog {
-    @include abs-center();
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: rem(40) rem(20);
+    position: relative;
+    overflow: hidden;
 
-    background: linear-gradient(135deg, var(--background_light) 0%, rgba(48, 54, 61, 0.2) 100%);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(199, 199, 199, 0.1);
-    border-radius: rem(20);
-    padding: rem(30) rem(60);
-    box-shadow: var(--boxShadow);
+    // Animated background circles
+    &::before,
+    &::after {
+        content: '';
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.15;
+        animation: float 8s ease-in-out infinite;
+    }
+
+    &::before {
+        width: 400px;
+        height: 400px;
+        background: var(--gradient-primary);
+        top: -100px;
+        left: -100px;
+        animation-delay: 0s;
+    }
+
+    &::after {
+        width: 350px;
+        height: 350px;
+        background: var(--gradient-secondary);
+        bottom: -100px;
+        right: -100px;
+        animation-delay: 2s;
+    }
+
+    &__container {
+        background: var(--gradient-card);
+        backdrop-filter: blur(24px) saturate(180%);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-2xl);
+        padding: rem(40) rem(60);
+        box-shadow: var(--shadow-xl);
+        max-width: 480px;
+        width: 100%;
+        position: relative;
+        z-index: 1;
+        animation: scaleIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+        @include tablet {
+            padding: rem(36) rem(48);
+            max-width: 440px;
+        }
+
+        @include mobile {
+            padding: rem(32) rem(24);
+            max-width: 100%;
+        }
+
+        // Top border glow
+        &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 2px;
+            background: var(--gradient-primary);
+            border-radius: 2px;
+            filter: blur(4px);
+        }
+    }
 
     &__header {
         text-align: center;
+        margin-bottom: rem(32);
+
+        @include mobile {
+            margin-bottom: rem(28);
+        }
 
         h2 {
-            margin: 0;
+            margin: 0 0 rem(12) 0;
+            font-size: rem(32);
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -1px;
+            animation: fadeInDown 0.6s ease;
+
+            @include tablet {
+                font-size: rem(28);
+            }
+
+            @include mobile {
+                font-size: rem(26);
+            }
         }
 
         p {
-            margin: 5px;
-            color: var(--second-text-color);
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: rem(15);
+            line-height: 1.6;
+            animation: fadeInDown 0.6s ease 0.1s both;
+
+            @include mobile {
+                font-size: rem(14);
+            }
+
+            a {
+                color: var(--primary);
+                font-weight: 600;
+                text-decoration: none;
+                transition: var(--transition);
+                position: relative;
+
+                &::after {
+                    content: '';
+                    position: absolute;
+                    bottom: -2px;
+                    left: 0;
+                    width: 0;
+                    height: 2px;
+                    background: var(--gradient-primary);
+                    transition: width var(--transition);
+                }
+
+                &:hover {
+                    color: var(--primary-hover);
+
+                    &::after {
+                        width: 100%;
+                    }
+                }
+            }
         }
     }
 
     &__form {
         display: flex;
         flex-direction: column;
-        gap: rem(20);
+        gap: rem(24);
+
+        @include mobile {
+            gap: rem(20);
+        }
 
         &-item {
             display: flex;
             flex-direction: column;
-            align-items: center;
+            gap: rem(10);
+            animation: fadeInUp 0.6s ease backwards;
 
-            & label {
-                font-size: rem(20);
-                margin: rem(7);
+            @for $i from 1 through 4 {
+                &:nth-child(#{$i}) {
+                    animation-delay: #{0.1 + $i * 0.05}s;
+                }
             }
 
-            & input {
-                padding: rem(10);
-                border: 1px solid var(--border-color);
-                border-radius: rem(8);
-                font-size: rem(16);
-                width: 100%;
-                transition: var(--transition);
-                background-color: transparent;
+            label {
+                font-size: rem(15);
+                font-weight: 600;
                 color: var(--text-color);
+                letter-spacing: -0.2px;
+                display: flex;
+                align-items: center;
+                gap: rem(8);
 
-                &:focus {
-                    outline: none;
-                    border-color: var(--primary_color);
-                    transform: scale(1.1);
+                @include mobile {
+                    font-size: rem(14);
+                }
+
+                &::before {
+                    content: '';
+                    width: 4px;
+                    height: 4px;
+                    border-radius: 50%;
+                    background: var(--gradient-primary);
+                }
+            }
+
+            input {
+                padding: rem(14) rem(18);
+                border: 1.5px solid var(--border-color-medium);
+                border-radius: var(--radius-md);
+                font-size: rem(15);
+                width: 100%;
+                transition: all var(--transition);
+                background: rgba(255, 255, 255, 0.03);
+                color: var(--text-color);
+                font-weight: 500;
+
+                @include mobile {
+                    padding: rem(12) rem(16);
+                    font-size: rem(14);
                 }
 
                 &::placeholder {
-                    color: var(--second-text-color);
+                    color: var(--text-muted);
+                    font-weight: 400;
+                }
+
+                &:hover {
+                    border-color: var(--border-color-strong);
+                    background: rgba(255, 255, 255, 0.05);
+                }
+
+                &:focus {
+                    outline: none;
+                    border-color: var(--primary);
+                    background: rgba(0, 132, 255, 0.05);
+                    box-shadow: 0 0 0 4px rgba(0, 132, 255, 0.1);
+                    transform: translateY(-2px);
+                }
+
+                &:disabled {
+                    opacity: 0.5;
+                    cursor: not-allowed;
                 }
             }
 
             button {
-                @include btn(var(--background_blue), var(--text-color), rem(7), rem(14));
-                border-color: transparent;
-                transition: var(--transition);
+                padding: rem(14) rem(24);
+                background: var(--gradient-primary);
+                color: white;
+                border: none;
+                border-radius: var(--radius-md);
+                font-size: rem(16);
+                font-weight: 700;
                 width: 100%;
+                transition: all var(--transition);
+                cursor: pointer;
+                box-shadow: 0 4px 16px rgba(0, 132, 255, 0.3);
+                position: relative;
+                overflow: hidden;
+                letter-spacing: 0.3px;
 
-                &:hover {
-                    transform: scale(1.1);
+                @include mobile {
+                    padding: rem(12) rem(20);
+                    font-size: rem(15);
                 }
 
-                &::placeholder {
-                    color: var(--text-color);
+                // Shine effect
+                &::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: -100%;
+                    width: 100%;
+                    height: 100%;
+                    background: linear-gradient(
+                        90deg,
+                        transparent,
+                        rgba(255, 255, 255, 0.3),
+                        transparent
+                    );
+                    transition: left 0.6s ease;
+                }
+
+                &:hover {
+                    transform: translateY(-3px);
+                    box-shadow: 0 8px 24px rgba(0, 132, 255, 0.4);
+                    filter: brightness(1.1);
+
+                    &::before {
+                        left: 100%;
+                    }
+                }
+
+                &:active {
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 12px rgba(0, 132, 255, 0.3);
+                }
+
+                &:disabled {
+                    opacity: 0.6;
+                    cursor: not-allowed;
+                    transform: none;
+
+                    &:hover {
+                        transform: none;
+                        box-shadow: 0 4px 16px rgba(0, 132, 255, 0.3);
+                    }
                 }
             }
         }
     }
+
+    // Error message styling
+    .error {
+        animation: fadeInDown 0.3s ease;
+        margin-bottom: rem(20);
+    }
+}
+
+// Loading spinner for button
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
 }

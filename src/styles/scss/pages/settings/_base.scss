@@ -67,7 +67,7 @@
     }
 
     &__section-description {
-        color: var(--second-text-color);
+        color: var(--text-secondary);
         font-size: rem(14);
         margin: 0 0 rem(24) 0;
         line-height: 1.5;
@@ -114,7 +114,7 @@
         }
 
         &::placeholder {
-            color: var(--second-text-color);
+            color: var(--text-secondary);
         }
 
         &:focus {
@@ -150,7 +150,7 @@
         }
 
         &::placeholder {
-            color: var(--second-text-color);
+            color: var(--text-secondary);
         }
 
         &:focus {
@@ -168,7 +168,7 @@
     &__hint {
         display: block;
         font-size: rem(13);
-        color: var(--second-text-color);
+        color: var(--text-secondary);
         margin-top: rem(6);
 
         @include mobile {

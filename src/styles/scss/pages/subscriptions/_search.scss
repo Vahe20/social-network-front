@@ -60,7 +60,7 @@
         }
 
         &::placeholder {
-            color: var(--second-text-color);
+            color: var(--text-secondary);
         }
     }
 
@@ -119,7 +119,7 @@
     &__hint {
         margin-top: rem(8);
         font-size: rem(13);
-        color: var(--second-text-color);
+        color: var(--text-secondary);
 
         @include mobile {
             font-size: rem(12);

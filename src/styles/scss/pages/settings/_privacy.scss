@@ -1,4 +1,4 @@
-@use "../../helpers/" as *;
+@use "../../helpers/"as *;
 
 .settings {
     &__toggle-group {
@@ -50,7 +50,7 @@
     &__toggle-description {
         display: block;
         font-size: rem(13);
-        color: var(--second-text-color);
+        color: var(--text-secondary);
         line-height: 1.4;
 
         @include mobile {
@@ -74,7 +74,7 @@
             width: 0;
             height: 0;
 
-            &:checked + .settings__slider {
+            &:checked+.settings__slider {
                 background: linear-gradient(135deg, var(--primary_color) 0%, #00ccff 100%);
 
                 &:before {
@@ -82,7 +82,7 @@
                 }
             }
 
-            &:focus + .settings__slider {
+            &:focus+.settings__slider {
                 box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.2);
             }
         }

@@ -134,7 +134,7 @@
     &__you {
         font-size: rem(14);
         font-weight: 500;
-        color: var(--second-text-color);
+        color: var(--text-secondary);
         font-style: italic;
 
         @include mobile {
@@ -144,7 +144,7 @@
 
     &__bio {
         font-size: rem(14);
-        color: var(--second-text-color);
+        color: var(--text-secondary);
         line-height: 1.5;
         margin: 0 0 rem(8) 0;
 
@@ -155,7 +155,7 @@
 
     &__stats {
         font-size: rem(13);
-        color: var(--second-text-color);
+        color: var(--text-secondary);
         margin: 0;
 
         @include mobile {

@@ -97,7 +97,7 @@ export const Password: React.FC<Props> = ({ register }) => {
                             transform: 'translateY(-50%)',
                             background: 'none',
                             border: 'none',
-                            color: 'var(--second-text-color)',
+                            color: 'var(--text-secondary)',
                             cursor: 'pointer',
                             fontSize: '18px',
                             padding: '4px 8px'
@@ -132,7 +132,7 @@ export const Password: React.FC<Props> = ({ register }) => {
                             transform: 'translateY(-50%)',
                             background: 'none',
                             border: 'none',
-                            color: 'var(--second-text-color)',
+                            color: 'var(--text-secondary)',
                             cursor: 'pointer',
                             fontSize: '18px',
                             padding: '4px 8px'
@@ -206,7 +206,7 @@ export const Password: React.FC<Props> = ({ register }) => {
                             transform: 'translateY(-50%)',
                             background: 'none',
                             border: 'none',
-                            color: 'var(--second-text-color)',
+                            color: 'var(--text-secondary)',
                             cursor: 'pointer',
                             fontSize: '18px',
                             padding: '4px 8px'

@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
-import { postService, likeService } from '../../../services';
+import { postService, likeService, commentService } from '../../../services';
 import type { IContext, IPostInfo } from '../../../types/utility';
 import { Image, ProfileImage } from '../helpers/Image';
+import { Comment } from './components/Comment';
 
 export const Post = () => {
     const { id } = useParams<{ id: string }>();
@@ -11,6 +12,8 @@ export const Post = () => {
     const [post, setPost] = useState<IPostInfo | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [commentText, setCommentText] = useState('');
+    const [submittingComment, setSubmittingComment] = useState(false);
 
     useEffect(() => {
         const fetchPost = async () => {
@@ -18,10 +21,10 @@ export const Post = () => {
 
             try {
                 setLoading(true);
-                const post = (await postService.getPostById(Number(id))).data.postInfo;
-                post.isLiked = post.postReactions.some(u => u.userId === user.id)
-                post.likesCount = post.postReactions.length;
-                setPost(post);
+                const postData = (await postService.getPostById(Number(id))).data.postInfo;
+                postData.isLiked = postData.postReactions.some(u => u.userId === user.id);
+                postData.likesCount = postData.postReactions.length;
+                setPost(postData);
             } catch {
                 setError('Failed to load post');
             } finally {
@@ -30,7 +33,7 @@ export const Post = () => {
         };
 
         fetchPost();
-    }, [id]);
+    }, [id, user.id]);
 
     const handleBack = () => {
         navigate(-1);
@@ -60,6 +63,29 @@ export const Post = () => {
         } catch (err) {
             console.error('Error deleting post:', err);
             alert('Failed to delete post');
+        }
+    };
+
+    const handleCommentSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!commentText.trim() || !post) return;
+
+        try {
+            setSubmittingComment(true);
+            await commentService.addComment(post.id, commentText);
+
+            // Refresh post data to get new comments
+            const updatedPost = (await postService.getPostById(post.id)).data.postInfo;
+            updatedPost.isLiked = updatedPost.postReactions.some(u => u.userId === user.id);
+            updatedPost.likesCount = updatedPost.postReactions.length;
+            setPost(updatedPost);
+
+            setCommentText('');
+        } catch (err) {
+            console.error('Error adding comment:', err);
+            alert('Failed to add comment');
+        } finally {
+            setSubmittingComment(false);
         }
     };
 
@@ -122,7 +148,7 @@ export const Post = () => {
                                 </div>
                                 <div className="post-detail__date">
                                     📅 {new Date(post.createdAt).toLocaleDateString('en-US', {
-                                        month: 'long',
+                                        month: 'short',
                                         day: 'numeric',
                                         year: 'numeric',
                                         hour: '2-digit',
@@ -157,28 +183,41 @@ export const Post = () => {
                         </div>
                     </div>
                 </article>
-                <div className="comments">
-                    <h2>Comments</h2>
 
-                    <form className='comments__addCommentsForm'>
+                <aside className="post-comments">
+                    <h2>💬 Comments ({post.postComments?.length || 0})</h2>
+
+                    <form className='post-comments__addCommentsForm' onSubmit={handleCommentSubmit}>
                         <div>
-                            <input type="text" />
+                            <input
+                                type="text"
+                                placeholder="Write a comment..."
+                                value={commentText}
+                                onChange={(e) => setCommentText(e.target.value)}
+                                disabled={submittingComment}
+                            />
                         </div>
                         <div>
-                            <button>Submit</button>
+                            <button
+                                type="submit"
+                                disabled={!commentText.trim() || submittingComment}
+                            >
+                                {submittingComment ? 'Sending...' : 'Send Comment'}
+                            </button>
                         </div>
                     </form>
 
-                    <div className='comments__list'>
-                        <div className="comments__item">
-                            <div className='comments__item-header'>
-                                <ProfileImage src={user.avatar} />
-                                <p>{user.firstName} {user.lastName}</p>
-                            </div>
-                            <p>hello my bro</p>
+                    {post.postComments && post.postComments.length > 0 ? (
+                        <Comment
+                            user={user}
+                            post={post}
+                        />
+                    ) : (
+                        <div className="post-comments__empty">
+                            No comments yet. Be the first to comment! 💭
                         </div>
-                    </div>
-                </div>
+                    )}
+                </aside>
             </div>
         </div>
     );

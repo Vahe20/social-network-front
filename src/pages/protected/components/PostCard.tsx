@@ -9,11 +9,11 @@ interface Props {
     showAuthor?: boolean;
 }
 
-export const PostCard: React.FC<Props> = ({ 
-    post, 
-    currentUserId, 
-    onDelete, 
-    showAuthor = true 
+export const PostCard: React.FC<Props> = ({
+    post,
+    currentUserId,
+    onDelete,
+    showAuthor = true
 }) => {
     const navigate = useNavigate();
     const isOwner = post.authorId === currentUserId;
@@ -25,21 +25,17 @@ export const PostCard: React.FC<Props> = ({
         navigate(`/account/post/${post.id}`);
     };
 
-    const handleDelete = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        if (confirm('Are you sure you want to delete this post?')) {
-            onDelete?.(post.id);
-        }
-    };
-
     return (
-        <article className="post-card" onClick={handleCardClick}>
+        <article
+            className="post-card"
+            onClick={handleCardClick}
+        >
             {post.postImage && (
                 <div className="post-card__image-container">
                     <Image src={post.postImage} className="post-card__image" />
                 </div>
             )}
-            
+
             <div className="post-card__content">
                 {showAuthor && post.author && (
                     <div className="post-card__author">
@@ -59,23 +55,24 @@ export const PostCard: React.FC<Props> = ({
 
                 <h3 className="post-card__title">{post.title}</h3>
                 <p className="post-card__description">{post.description}</p>
-                
+
                 <div className="post-card__footer">
                     <div className="post-card__meta">
                         <span className="post-card__date">
-                            📅 {new Date(post.createdAt).toLocaleDateString('en-US', { 
-                                month: 'short', 
+                            {new Date(post.createdAt).toLocaleDateString('en-US', {
+                                month: 'short',
                                 day: 'numeric',
                                 year: 'numeric'
                             })}
                         </span>
                     </div>
-                    
+
                     <div className="post-card__actions">
                         {isOwner && onDelete && (
-                            <button 
+                            <button
                                 className="post-card__delete-btn"
-                                onClick={handleDelete}
+                                onClick={() => onDelete(post.id)}
+                                aria-label="Delete post"
                             >
                                 🗑️
                             </button>

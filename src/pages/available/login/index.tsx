@@ -34,8 +34,10 @@ export const Login = () => {
 
     return (
         <div className="regLog">
-            <Header error={error} />
-            <Form handleLogin={handleLogin} isLoading={isLoading} />
+            <div className="regLog__container">
+                <Header error={error} />
+                <Form handleLogin={handleLogin} isLoading={isLoading} />
+            </div>
         </div>
     );
 };

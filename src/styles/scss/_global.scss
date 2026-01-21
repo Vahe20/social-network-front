@@ -2,18 +2,31 @@
 
 * {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 html {
     scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 body {
     @include fluid-text(18, 16);
 
-    background-color: var(--background_dark);
+    background: var(--background_dark);
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(0, 132, 255, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(255, 0, 110, 0.08) 0px, transparent 50%),
+        radial-gradient(at 0% 100%, rgba(0, 212, 255, 0.08) 0px, transparent 50%);
+    background-attachment: fixed;
     color: var(--text-color);
     overflow-x: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    line-height: 1.6;
 }
 
 .container {
@@ -22,28 +35,67 @@ body {
 
 .wrap {
     @include min-max(296px, 1280px);
+    margin: 0 auto;
+    padding: 0 rem(20);
 }
 
+// Error message
 .error {
     color: var(--error);
-    padding: rem(3);
-    border-block: 1px solid var(--error)
+    padding: rem(12) rem(16);
+    border: 1px solid var(--error);
+    border-radius: var(--radius-md);
+    background: rgba(240, 40, 73, 0.1);
+    backdrop-filter: blur(10px);
+    font-size: rem(14);
+    display: flex;
+    align-items: center;
+    gap: rem(8);
+    animation: slideDown 0.3s ease;
+
+    &::before {
+        content: '⚠️';
+        font-size: rem(18);
+    }
 }
 
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
+// Links
 a {
-    color: var(--primary_color);
-
+    color: var(--primary);
+    text-decoration: none;
     transition: var(--transition);
+    position: relative;
 
     &:hover {
-        color: var(--second-text-color);
+        color: var(--primary-hover);
+    }
+
+    &:active {
+        transform: scale(0.98);
     }
 }
 
 // Global input and textarea styles
 input, textarea, select {
     box-sizing: border-box;
+    font-family: inherit;
+}
+
+input, textarea {
+    &::placeholder {
+        color: var(--text-muted);
+    }
 }
 
 // Global image styles
@@ -51,6 +103,20 @@ img {
     max-width: 100%;
     height: auto;
     display: block;
+}
+
+// Button reset
+button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+    outline: none;
+}
+
+// Lists
+ul, ol {
+    list-style: none;
 }
 
 // Accessibility improvements
@@ -61,32 +127,51 @@ img {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
     }
 }
 
 // Custom scrollbar
 ::-webkit-scrollbar {
-    width: 12px;
+    width: 10px;
+    height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--background_dark);
+    background: var(--background_darker);
+    border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    border-radius: 6px;
-    border: 2px solid var(--background_dark);
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 10px;
+    border: 2px solid var(--background_darker);
+    transition: var(--transition);
+
+    &:hover {
+        background: linear-gradient(135deg, var(--primary-hover), var(--secondary-hover));
+        box-shadow: var(--shadow-glow);
+    }
 }
 
-::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, #5b9ef8, #a47bf8);
+// Selection
+::selection {
+    background: rgba(0, 132, 255, 0.3);
+    color: var(--text-color);
 }
 
-// ReactModal base styles override
+::-moz-selection {
+    background: rgba(0, 132, 255, 0.3);
+    color: var(--text-color);
+}
+
+// ReactModal styles
 .ReactModal__Overlay {
     opacity: 0;
-    transition: opacity 200ms ease-in-out;
+    background: rgba(0, 0, 0, 0.75) !important;
+    backdrop-filter: blur(8px);
+    transition: opacity 300ms ease-in-out;
+    z-index: var(--z-modal);
 }
 
 .ReactModal__Overlay--after-open {
@@ -100,7 +185,13 @@ img {
 .ReactModal__Content {
     opacity: 0;
     transform: translate(-50%, -50%) scale(0.9);
-    transition: all 200ms ease-in-out;
+    transition: all 300ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    background: var(--gradient-card) !important;
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius-xl) !important;
+    box-shadow: var(--shadow-xl);
+    padding: rem(32) !important;
 }
 
 .ReactModal__Content--after-open {
@@ -111,4 +202,76 @@ img {
 .ReactModal__Content--before-close {
     opacity: 0;
     transform: translate(-50%, -50%) scale(0.9);
+}
+
+// Focus styles
+:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+
+// Utility animations
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+// Loading skeleton
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--background_light) 0%,
+        rgba(255, 255, 255, 0.05) 50%,
+        var(--background_light) 100%
+    );
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite;
+    border-radius: var(--radius-md);
 }

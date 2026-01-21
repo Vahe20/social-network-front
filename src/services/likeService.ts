@@ -6,7 +6,7 @@ interface LikeResponse {
 }
 
 export const likeService = {
-	toggleLike: (postId: number) => {
+	toggleLike: async (postId: number) => {
 		return Axios.post<LikeResponse>(`/posts/${postId}/likes`);
 	},
 };

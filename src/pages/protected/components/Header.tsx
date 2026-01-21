@@ -10,20 +10,20 @@ export const Header: React.FC<props> = ({ handleLogout }) => {
     const [requestCount, setRequestCount] = useState(0);
 
     useEffect(() => {
+        const loadRequestCount = async () => {
+            try {
+                const response = await userService.getFollowRequests();
+                setRequestCount(response.data.requests.length);
+            } catch (err) {
+                console.log(err);
+            }
+        };
+
         loadRequestCount();
-        // Обновляем каждые 30 секунд
         const interval = setInterval(loadRequestCount, 30000);
         return () => clearInterval(interval);
     }, []);
 
-    const loadRequestCount = async () => {
-        try {
-            const response = await userService.getFollowRequests();
-            setRequestCount(response.data.requests.length);
-        } catch (err) {
-            // Игнорируем ошибки, чтобы не мешать пользователю
-        }
-    };
 
     return (
         <header className='header'>
@@ -55,8 +55,8 @@ export const Header: React.FC<props> = ({ handleLogout }) => {
                             </NavLink>
                         </li>
                         <li className='header__item'>
-                            <button 
-                                onClick={handleLogout} 
+                            <button
+                                onClick={handleLogout}
                                 className='header__link header__logout'
                             >
                                 🚪 Logout

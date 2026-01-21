@@ -9,17 +9,16 @@ interface props {
     handleLikePost?: (id: number) => void;
 }
 
-const PostsList: React.FC<props> = ({ posts, currentUserId, handleDeletePost, handleLikePost }) => {
+const PostsList: React.FC<props> = ({ posts, currentUserId, handleDeletePost }) => {
     return (
         <div className="posts__grid">
             {posts.length > 0 ? (
                 posts.map((post) => (
-                    <PostCard 
+                    <PostCard
                         key={post.id}
                         post={post}
                         currentUserId={currentUserId}
                         onDelete={handleDeletePost}
-                        onLike={handleLikePost}
                         showAuthor={true}
                     />
                 ))
