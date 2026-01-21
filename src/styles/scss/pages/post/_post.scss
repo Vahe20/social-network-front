@@ -1,9 +1,11 @@
-// Post Card Component Styles
+@use "../../helpers/"as *;
+
 @keyframes fadeInUp {
     from {
         opacity: 0;
         transform: translateY(30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -212,10 +214,9 @@
     }
 }
 
-// Post Detail Page Styles
 .post-page {
     width: 100%;
-    max-width: 900px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 2rem 1rem;
 
@@ -285,13 +286,16 @@
         overflow: hidden;
         border: 1px solid var(--border-color-light);
         box-shadow: var(--boxShadow);
+        padding: rem(20);
     }
 }
 
 .post-detail {
+    display: flex;
+
     &__image-container {
         position: relative;
-        width: 100%;
+        width: 50%;
         max-height: 600px;
         overflow: hidden;
         background: var(--background_dark);

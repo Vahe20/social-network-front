@@ -51,6 +51,8 @@ export interface IPost {
 export interface IPostInfo extends IPost {
 	postComments: IPostComments[];
 	postReactions: IPostReaction[];
+	isLiked?: boolean;
+	likesCount?: number;
 }
 
 export interface IPostReaction {

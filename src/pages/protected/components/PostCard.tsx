@@ -6,7 +6,6 @@ interface Props {
     post: IPost;
     currentUserId: number;
     onDelete?: (id: number) => void;
-    onLike?: (id: number) => void;
     showAuthor?: boolean;
 }
 
@@ -14,23 +13,16 @@ export const PostCard: React.FC<Props> = ({
     post, 
     currentUserId, 
     onDelete, 
-    onLike,
     showAuthor = true 
 }) => {
     const navigate = useNavigate();
     const isOwner = post.authorId === currentUserId;
 
     const handleCardClick = (e: React.MouseEvent) => {
-        // Не переходить если клик был по кнопке
         if ((e.target as HTMLElement).closest('button')) {
             return;
         }
         navigate(`/account/post/${post.id}`);
-    };
-
-    const handleLike = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        onLike?.(post.id);
     };
 
     const handleDelete = (e: React.MouseEvent) => {
@@ -80,14 +72,6 @@ export const PostCard: React.FC<Props> = ({
                     </div>
                     
                     <div className="post-card__actions">
-                        <button 
-                            className={`post-card__like-btn ${post.isLiked ? 'post-card__like-btn--active' : ''}`}
-                            onClick={handleLike}
-                        >
-                            {post.isLiked ? '❤️' : '🤍'}
-                            <span className="post-card__like-count">{post.likesCount || 0}</span>
-                        </button>
-                        
                         {isOwner && onDelete && (
                             <button 
                                 className="post-card__delete-btn"

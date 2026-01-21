@@ -18,7 +18,6 @@ export const UserPosts: React.FC<Props> = ({
     isCurrentUser,
     currentUserId,
     onDeletePost,
-    onLikePost
 }) => {
     if (isPrivate && !isFollowing && !isCurrentUser) {
         return (
@@ -74,7 +73,6 @@ export const UserPosts: React.FC<Props> = ({
                         post={post}
                         currentUserId={currentUserId}
                         onDelete={onDeletePost}
-                        onLike={onLikePost}
                         showAuthor={false}
                     />
                 ))}

@@ -1,12 +1,12 @@
 @use 'variables';
 @use 'global';
 
-@use "./pages/regLog";
+@use "./pages/regLog/regLog";
 @use "./pages/layout/index" as *;
-@use "./pages/notFound";
+@use "./pages/notFound/notFound";
 @use "./pages/home/index" as *;
 @use "./pages/settings/index" as *;
 @use "./pages/subscriptions/index" as *;
 @use "./pages/profile/index" as *;
 @use "./pages/requests/index" as *;
-@use "./pages/post";
+@use "./pages/post/post";

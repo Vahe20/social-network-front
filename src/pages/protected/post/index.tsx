@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
 import { postService, likeService } from '../../../services';
-import type { IContext, IPost } from '../../../types/utility';
+import type { IContext, IPostInfo } from '../../../types/utility';
 import { Image, ProfileImage } from '../helpers/Image';
 
 export const Post = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { user } = useOutletContext<IContext>();
-    const [post, setPost] = useState<IPost | null>(null);
+    const [post, setPost] = useState<IPostInfo | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -18,8 +18,10 @@ export const Post = () => {
 
             try {
                 setLoading(true);
-                const response = await postService.getPostById(Number(id));
-                setPost(response.data.postInfo);
+                const post = (await postService.getPostById(Number(id))).data.postInfo;
+                post.isLiked = post.postReactions.some(u => u.userId === user.id)
+                post.likesCount = post.postReactions.length;
+                setPost(post);
             } catch {
                 setError('Failed to load post');
             } finally {
@@ -34,11 +36,11 @@ export const Post = () => {
         navigate(-1);
     };
 
-    const handleLike = async () => {
+    const handleLike = () => {
         if (!post) return;
 
         try {
-            await likeService.toggleLike(post.id);
+            likeService.toggleLike(post.id);
             setPost(prev => prev ? {
                 ...prev,
                 isLiked: !prev.isLiked,
@@ -49,11 +51,11 @@ export const Post = () => {
         }
     };
 
-    const handleDelete = async () => {
+    const handleDelete = () => {
         if (!post || !confirm('Are you sure you want to delete this post?')) return;
 
         try {
-            await postService.deletePost(post.id);
+            postService.deletePost(post.id);
             navigate('/account/home');
         } catch (err) {
             console.error('Error deleting post:', err);
@@ -135,13 +137,13 @@ export const Post = () => {
 
                         <div className="post-detail__footer">
                             <div className="post-detail__stats">
-                                {/* <button
+                                <button
                                     className={`post-detail__like-btn ${post.isLiked ? 'active' : ''}`}
                                     onClick={handleLike}
                                 >
                                     {post.isLiked ? '❤️' : '🤍'}
                                     <span>{post.likesCount || 0} {post.likesCount === 1 ? 'like' : 'likes'}</span>
-                                </button> */}
+                                </button>
                             </div>
 
                             {isOwner && (
@@ -155,6 +157,28 @@ export const Post = () => {
                         </div>
                     </div>
                 </article>
+                <div className="comments">
+                    <h2>Comments</h2>
+
+                    <form className='comments__addCommentsForm'>
+                        <div>
+                            <input type="text" />
+                        </div>
+                        <div>
+                            <button>Submit</button>
+                        </div>
+                    </form>
+
+                    <div className='comments__list'>
+                        <div className="comments__item">
+                            <div className='comments__item-header'>
+                                <ProfileImage src={user.avatar} />
+                                <p>{user.firstName} {user.lastName}</p>
+                            </div>
+                            <p>hello my bro</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );
