@@ -24,7 +24,6 @@ export const Layout = () => {
         navigate("/");
     };
 
-    // Оптимизированный refetch с опциональным silent режимом
     const optimizedRefetch = useCallback(async (silent: boolean = true) => {
         await refetch(silent);
     }, [refetch]);

@@ -13,4 +13,10 @@ export const authService = {
 	signin: async (data: ISigninRequest) => {
 		return Axios.post<IAuthResponse>("/auth/signin", data);
 	},
+
+	refresh: () => {
+		
+	},
+
+	logout: () => {},
 };
